@@ -1,0 +1,199 @@
+@font-face {
+    font-family: 'Josefin';
+    src: url('../fonts/JosefinSans-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'LilitaOne';
+    src: url('../fonts/LilitaOne-Regular.ttf') format('truetype');
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* For WebKit-based browsers (Chrome, Safari) */
+/* This style targets both the vertical and horizontal scrollbar */
+
+/* Transparent background for the scrollbar track */
+::-webkit-scrollbar {
+    width: 8px; /* Set the width of the scrollbar */
+    background-color: transparent;
+    border-radius: 4px; /* Rounded border */
+  }
+  
+  /* Nearly transparent light black color for the scrollbar thumb */
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2); /* Adjust the alpha value (0.2) for transparency */
+    border-radius: 4px; /* Rounded border */
+  }
+  
+  /* For Firefox */
+  /* Firefox supports scrollbar customization with the -moz prefix */
+  /* However, it doesn't support transparent backgrounds, so we can't make the track transparent */
+  
+  /* Nearly transparent light black color for the scrollbar thumb */
+  /* Adjust the alpha value (0.2) for transparency */
+  /* For Firefox, we only target the thumb */
+  /* Firefox doesn't support styling the track */
+  @-moz-document url-prefix() {
+    scrollbar {
+      scrollbar-width: thin; /* Set the width of the scrollbar */
+      scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+      border-radius: 4px; /* Rounded border */
+    }
+  }
+
+html,
+body,
+#root,
+.app {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    font-family: 'Josefin', sans-serif;
+    * {
+        font-family: 'Josefin', sans-serif;
+    }
+}
+
+.app-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.sidebar {
+    transition: all ease .4s;
+    position: fixed;
+    width: 4rem;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .logo-section {
+        padding: 30px 10px;
+
+        * {
+            transition: all ease .4s;
+        }
+    }
+
+    .action-menu-section {
+        width: 100%;
+    }
+
+    .bottom-menu-section {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        // color: #e2e2e2;
+    }
+
+}
+
+.sidebar.open {
+    width: 10rem;
+}
+
+.topbar {
+    background: transparent !important;
+    box-shadow: none !important;
+    .action-section {
+        display: flex;
+        .search-section {
+            color: #000;
+        }
+        > * {
+            align-items: center;
+            margin: 0 10px;
+        }
+
+        .action-icons > * {
+            margin: 0 5px;
+        }
+    }
+}
+
+.content {
+    transition: all ease .4s;
+    position:relative;
+    width: calc(100% - 4rem);
+    height: 100%;
+    left: 4rem;
+}
+
+.content.open {
+    width: calc(100% - 10rem);
+    left: 10rem;
+}
+
+.content.full {
+    width: 100%;
+    left: 0;
+}
+
+.container {
+    padding: 50px 20px 20px 20px;
+}
+
+.auth-container {
+    background-image: url(../images/auth-background.jpg);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-box {
+    background-color: #F7F3E3;
+    border-radius: .7rem;
+    padding: 2.5rem;
+    max-width: 700px;
+    box-shadow: 10px 10px 5px 0px rgba(72,72,72,0.75);
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(72,72,72,0.75);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(72,72,72,0.75);
+    margin-left: 20px;
+    margin-right: 20px;
+}
+.auth-box.reg {
+    max-height: 700px;
+    overflow-y: scroll;
+}
+
+.auth-title {
+    font-family: 'LilitaOne', sans-serif !important;
+}
+
+.login-form > div {
+    margin: 15px 0;
+}
+
+.btn-login {
+    margin: 40px 0 20px 0 !important;
+    background: #FF7D43 !important;
+}
+
+.css-1pduc5x-MuiStack-root {
+    padding: 0 !important;
+}
+
+.column-center-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

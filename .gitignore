@@ -1,0 +1,19 @@
+# Node.js
+client/node_modules/
+server/node_modules/
+client/npm-debug.log
+client/yarn-error.log
+
+# React build
+client/build/
+cleint/dist/
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+.DS_Store
+Thumbs.db
