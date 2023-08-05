@@ -55,7 +55,6 @@
     ]
   },
   "devDependencies": {
-    "other-dev-dependencies": "version",
     "@babel/plugin-proposal-private-property-in-object": "version"
   }
 }
