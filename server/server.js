@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const multer = require('multer');
-const fs = require('fs').promises;
+const fs = require('fs');
 const crypto = require('crypto');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -28,8 +28,19 @@ const bucketName = process.env.BUCKET_NAME;
 const bucketRegion = process.env.BUCKET_REGION;
 const awsAccessKey = process.env.AWS_ACCESS_KEY;
 const awsSecretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+const development = process.env.DEVELOPMENT_CONFIG;
+const _dirname = path.dirname("");
+const buildPath = path.join(_dirname, "../client/build");
 
 // Initilize
+if (fs.existsSync(buildPath) && !development) {
+    app.use(express.static(buildPath));
+
+    app.get('/*', (req, res) => {
+        res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+    });
+}
+
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors());
@@ -115,14 +126,15 @@ app.post('/auth/register', upload.single('profile'), async(req, res) => {
 
         await s3.send(uploadCommand);
 
-        const getObjectParams = {
-            Bucket: bucketName,
-            Key: imageName
-        }
+        // const getObjectParams = {
+        //     Bucket: bucketName,
+        //     Key: imageName
+        // }
 
-        const command = new GetObjectCommand(getObjectParams);
+        // const command = new GetObjectCommand(getObjectParams);
 
-        fileDir = await getSignedUrl(s3, command);
+        // fileDir = await getSignedUrl(s3, command);
+        fileDir = `https://${bucketName}.s3.amazonaws.com/${imageName}`;
     } catch (error) {
         fileDir = 'https://registerapp.s3.us-east-2.amazonaws.com/default-profile.png';
     }
@@ -288,14 +300,15 @@ app.post('/updateData', upload.single('file'), async (req, res) => {
                 
                         await s3.send(uploadCommand);
                 
-                        const getObjectParams = {
-                            Bucket: bucketName,
-                            Key: imageName
-                        }
+                        // const getObjectParams = {
+                        //     Bucket: bucketName,
+                        //     Key: imageName
+                        // }
                 
-                        const command = new GetObjectCommand(getObjectParams);
+                        // const command = new GetObjectCommand(getObjectParams);
                 
-                        values['fileDir'] = await getSignedUrl(s3, command);
+                        // values['fileDir'] = await getSignedUrl(s3, command);
+                        values['fileDir'] = `https://${bucketName}.s3.amazonaws.com/${imageName}`;
                     } catch (error) {
                         values['fileDir'] = 'https://registerapp.s3.us-east-2.amazonaws.com/default-profile.png';
                     }
