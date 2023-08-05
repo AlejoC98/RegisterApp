@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 import { Global } from '../../context/GlobalContext';
 import { getIconComponent } from '../../components/global';
 
-export const Item = ({ title, to, icon, selected, setSelected, collapse }) => {
+const Item = ({ title, to, icon, selected, setSelected }) => {
     return (
       <ListItemButton
         component={Link}

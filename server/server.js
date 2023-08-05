@@ -12,6 +12,7 @@ const cors = require('cors');
 const {S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const sharp = require('sharp');
+const bcrypt = require("bcrypt");
 
 // Variables
 // const { connectDB, Role, User, Notification, Menu, Course, UserCourse } = require('./database');
@@ -243,10 +244,11 @@ app.post('/createData', upload.single('file'), async (req, res) => {
     }
 });
 
-app.post('/updateData', async (req, res) => {
-    const { collection, values } = req.body;
+app.post('/updateData', upload.single('file'), async (req, res) => {
+    let { collection, values } = req.body;
     let response = undefined;
     let message = 'Record updated!';
+    const file = req.file;
 
     try {
         switch (collection) {
@@ -265,12 +267,61 @@ app.post('/updateData', async (req, res) => {
                 }
                 message = `Student ${values.status}`;
                 break;
+            case 'profile':
+                (typeof values === 'string') ? values = JSON.parse(values) : values;
+                if (file) {
+                    try {
+                        const { buffer, mimetype } = req.file;
+                
+                        const imageName = randomImageName();
+                        
+                        const fileBuffer = await sharp(buffer).resize(500).toBuffer();
+                
+                        const params = {
+                            Bucket: bucketName,
+                            Key: imageName,
+                            Body: fileBuffer,
+                            ContentType: mimetype
+                        }
+                
+                        const uploadCommand = new PutObjectCommand(params);
+                
+                        await s3.send(uploadCommand);
+                
+                        const getObjectParams = {
+                            Bucket: bucketName,
+                            Key: imageName
+                        }
+                
+                        const command = new GetObjectCommand(getObjectParams);
+                
+                        values['fileDir'] = await getSignedUrl(s3, command);
+                    } catch (error) {
+                        values['fileDir'] = 'https://registerapp.s3.us-east-2.amazonaws.com/default-profile.png';
+                    }
+                }
+
+                response = await updateRecord('users', values);
+
+                message = 'User information updated!';
+
+                break;
+            case 'password':
+                const user = await User.auth(values.username, values.current_password);
+
+                if (user) {
+                    values.new_password = await bcrypt.hash(values.new_password, 10);
+                    response = await updateRecord('users', {_id: values._id, password: values.new_password});
+
+                    message = 'Password Updated!';
+                }
+                break;
             default:
                 response = await updateRecord(collection, values);
                 break;
         }   
     } catch (error) {
-        res.status(404).send({ message: error });
+        res.status(404).send({ message: error.message });
     }
 
     if (response !== undefined) {

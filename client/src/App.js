@@ -20,37 +20,45 @@ import Notification from "./views/notifications";
 import CourseDetails from "./views/courses/CourseDetails";
 import TeachersDetails from "./views/teachers/TeachersDetails";
 import StudentDetails from "./views/students/StudentDetails";
+import { ColorModeContext, useMode } from "./theme";
+import { ThemeProvider } from "@emotion/react";
 
 
 function App() {
+  const [theme, colorMode] = useMode();
+
   return (
-    <UserProvider>
-      <GlobalProvider>
-        <Routes>
-          <Route path="/" element={<ProtectedRoutes />}>
-            <Route element={<AuthLayout />}>
-              <Route path="/Login" element={<Login />} />
-              <Route path="/Register" element={<Register />} />
-            </Route>
-            <Route element={<AppLayout/>}>
-              <Route path="/Dashboard" element={<Dashboard />} />
-              <Route path="/Courses" element={<Courses />} />
-              <Route path="/Courses/:id" element={<CourseDetails />} />
-              <Route path="/Students" element={<Students />} />
-              <Route path="/Students/:id" element={<StudentDetails />} />
-              <Route path="/Teachers" element={<Teachers />} />
-              <Route path="/Teachers/:id" element={<TeachersDetails />} />
-              <Route path="/Admin" element={<Admin />} />
-              <Route path="/Admin/:option" element={<Create />} />
-              <Route path="/Notifications" element={<Notification />} />
-              <Route path="/Notifications/:id" element={<Notification />} />
-              <Route path="/Settings" element={<Settings />} />
-              <Route path="/Account" element={<Account />} />
-            </Route>
-          </Route>
-        </Routes>
-      </GlobalProvider>
-    </UserProvider>
+    <ColorModeContext.Provider value={theme}>
+      <ThemeProvider theme={theme}>
+        <UserProvider>
+          <GlobalProvider>
+            <Routes>
+              <Route path="/" element={<ProtectedRoutes />}>
+                <Route element={<AuthLayout />}>
+                  <Route path="/Login" element={<Login />} />
+                  <Route path="/Register" element={<Register />} />
+                </Route>
+                <Route element={<AppLayout/>}>
+                  <Route path="/Dashboard" element={<Dashboard />} />
+                  <Route path="/Courses" element={<Courses />} />
+                  <Route path="/Courses/:id" element={<CourseDetails />} />
+                  <Route path="/Students" element={<Students />} />
+                  <Route path="/Students/:id" element={<StudentDetails />} />
+                  <Route path="/Teachers" element={<Teachers />} />
+                  <Route path="/Teachers/:id" element={<TeachersDetails />} />
+                  <Route path="/Admin" element={<Admin />} />
+                  <Route path="/Admin/:option" element={<Create />} />
+                  <Route path="/Notifications" element={<Notification />} />
+                  <Route path="/Notifications/:id" element={<Notification />} />
+                  <Route path="/Settings" element={<Settings />} />
+                  <Route path="/Account" element={<Account />} />
+                </Route>
+              </Route>
+            </Routes>
+          </GlobalProvider>
+        </UserProvider>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
 }
 
