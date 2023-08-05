@@ -1,20 +1,22 @@
-import { Box, Grid } from '@mui/material'
+import { Box, Button, Grid, TextField } from '@mui/material'
 import { Formik } from 'formik'
 import React from 'react'
 import * as yup from "yup";
-import { BlockContent, handleDynamicData, usStates } from '../global';
-import DynamicSelect from '../DynamicSelect';
+import { BlockContent, usStates, countries } from '../global';
+import { UserAuth } from '../../context/UserContext';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import AutoComplete from '../AutoComplete';
 
-const UpdateAddressForm = () => {
-  
-  const countryData = handleDynamicData([{country: 'United State', code: 'US'}], 'country', 'code');
-  const stateData = handleDynamicData(usStates, 'name', 'code');
-  
+const UpdateAddressForm = ({ setSelected }) => {
+
+  const { user, setUserData } = UserAuth();
+
   const initialValues = {
     country: '',
     city: '',
     state: '',
-    street: '',
+    address: '',
     zipcode: ''
   }
 
@@ -22,12 +24,32 @@ const UpdateAddressForm = () => {
     country: yup.string(),
     city: yup.string(),
     state: yup.string(),
-    street: yup.string(),
+    address: yup.string(),
     zipcode: yup.string()
   });
 
-  const handleSubmit = (values) => {
-    console.log(values);
+  const handleSubmit = (values, {resetForm}) => {
+    const updateKeys = Object.keys(values).filter(k => values[k] !== '');
+    let insertData = {_id: user._id}
+
+    updateKeys.forEach((i) => {
+      insertData[i] = values[i];
+    });
+
+    axios.post('/updateData', {
+      collection: 'address',
+      values: insertData
+    }).then((res) => {
+      if (res.data.status) {
+        toast.success(res.data.message);
+        resetForm();
+        let newUserData = {...user,...insertData};
+        setUserData(newUserData);
+        setSelected('My Profile');
+      }
+    }).catch((err) => {
+      toast.warning(err.response.data.message);
+    });
   }
 
   return (
@@ -42,39 +64,33 @@ const UpdateAddressForm = () => {
             <Grid container spacing={2}>
               <Grid item md={6}>
                 <BlockContent>
-                  <DynamicSelect
+                  <AutoComplete 
                     fullWidth
-                    options={countryData}
-                    multiple={false}
-                    disabled={false}
-                    setValues={setValues}
-                    label='Country'
-                    variant='outlined'
-                    type='text'
+                    id='country'
                     name='country'
-                    onChange={handleChange}
+                    label='Country'
                     value={values.country}
+                    setValues={setValues}
                     error={!!touched.country && !!errors.country}
                     helperText={touched.country && errors.country}
+                    onChange={handleChange}
+                    options={countries.map((item) => item.country)}
                   />
                 </BlockContent>
               </Grid>
               <Grid item md={6}>
                 <BlockContent>
-                  <DynamicSelect
+                  <AutoComplete 
                     fullWidth
-                    options={stateData}
-                    multiple={false}
-                    disabled={false}
-                    setValues={setValues}
-                    label='State'
-                    variant='outlined'
-                    type='text'
+                    id='state'
                     name='state'
-                    onChange={handleChange}
+                    label='State'
                     value={values.state}
+                    setValues={setValues}
                     error={!!touched.state && !!errors.state}
                     helperText={touched.state && errors.state}
+                    onChange={handleChange}
+                    options={usStates.map((item) => item.name)}
                   />
                 </BlockContent>
               </Grid>
@@ -82,26 +98,50 @@ const UpdateAddressForm = () => {
                 <BlockContent>
                   <TextField
                         fullWidth
-                        variant='filled'
-                        type='email'
-                        label='Email'
-                        value={values.email}
-                        name='email'
-                        onBlur={handleBlur}
+                        variant='outlined'
+                        type='text'
+                        label='City'
+                        value={values.city}
+                        name='city'
                         onChange={handleChange}
-                        error={!!touched.email && !!errors.email}
-                        helperText={touched.email && errors.email}
+                        error={!!touched.city && !!errors.city}
+                        helperText={touched.city && errors.city}
                     />
                 </BlockContent>
               </Grid>
               <Grid item md={6}>
                 <BlockContent>
-                  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Consequatur praesentium natus obcaecati odio. Dicta sunt, nobis, sit nemo a voluptatem voluptate in vitae fugiat accusamus et asperiores aut neque earum?
+                <TextField
+                        fullWidth
+                        variant='outlined'
+                        type='text'
+                        label='Zipcode'
+                        value={values.zipcode}
+                        name='zipcode'
+                        onChange={handleChange}
+                        error={!!touched.zipcode && !!errors.zipcode}
+                        helperText={touched.zipcode && errors.zipcode}
+                    />
                 </BlockContent>
               </Grid>
-              <Grid item md={6}>
+              <Grid item md={12}>
                 <BlockContent>
-                  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Consequatur praesentium natus obcaecati odio. Dicta sunt, nobis, sit nemo a voluptatem voluptate in vitae fugiat accusamus et asperiores aut neque earum?
+                <TextField
+                        fullWidth
+                        variant='outlined'
+                        type='text'
+                        label='Street'
+                        value={values.address}
+                        name='address'
+                        onChange={handleChange}
+                        error={!!touched.address && !!errors.address}
+                        helperText={touched.address && errors.address}
+                    />
+                </BlockContent>
+              </Grid>
+              <Grid item md={12}>
+                <BlockContent>
+                <Button disabled={values.country === '' && values.city === '' && values.state === '' && values.address === '' && values.zipcode === ''} variant='contained' color='secondary' type='submit'>Update</Button>
                 </BlockContent>
               </Grid>
             </Grid>

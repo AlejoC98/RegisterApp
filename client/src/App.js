@@ -28,7 +28,7 @@ function App() {
   const [theme, colorMode] = useMode();
 
   return (
-    <ColorModeContext.Provider value={theme}>
+    <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <UserProvider>
           <GlobalProvider>

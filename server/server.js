@@ -316,6 +316,10 @@ app.post('/updateData', upload.single('file'), async (req, res) => {
                     message = 'Password Updated!';
                 }
                 break;
+            case 'contact':
+            case 'address':
+                response = await updateRecord('users', values);
+                break;
             default:
                 response = await updateRecord(collection, values);
                 break;

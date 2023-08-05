@@ -4,8 +4,13 @@ import React from 'react'
 import * as yup from "yup";
 import { BlockContent } from '../global';
 import MaskTextField from '../MaskTextField';
+import { UserAuth } from '../../context/UserContext';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
-const UpdateContactForm = () => {
+const UpdateContactForm = ({ setSelected }) => {
+
+    const { user, setUserData } = UserAuth();
 
     const initialValues = {
         email: '',
@@ -17,8 +22,28 @@ const UpdateContactForm = () => {
         phone: yup.string().min(14, 'Minimun 14')
     });
 
-    const handleSubmit = (values) => {
-        console.log(values);
+    const handleSubmit = (values, {resetForm}) => {
+        const updateKeys = Object.keys(values).filter(k => values[k] !== '');
+        let insertData = {_id: user._id}
+    
+        updateKeys.forEach((i) => {
+          insertData[i] = values[i];
+        });
+
+        axios.post('/updateData', {
+            collection: 'contact',
+            values: insertData
+          }).then((res) => {
+            if (res.data.status) {
+              toast.success(res.data.message);
+              resetForm();
+              let newUserData = {...user,...insertData};
+              setUserData(newUserData);
+              setSelected('My Profile');
+            }
+          }).catch((err) => {
+            toast.warning(err.response.data.message);
+          });
     }
 
   return (

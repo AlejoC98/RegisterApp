@@ -1,26 +1,66 @@
 import { Avatar, Box, Button, Grid, IconButton, List, ListItem, ListItemButton, ListItemText, Typography, useTheme } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Block, BlockContent } from '../../components/global'
 import { UserAuth } from '../../context/UserContext';
 import { Global } from '../../context/GlobalContext';
-import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
 import { tokens } from '../../theme';
 import UpdatePasswordForm from '../../components/forms/UpdatePasswordForm';
 import UpdateProfileForm from '../../components/forms/UpdateProfileForm';
 import UpdateAddressForm from '../../components/forms/UpdateAddressForm';
 import UpdateContactForm from '../../components/forms/UpdateContactForm';
+import CollapseList from '../../components/CollapseList';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+
+const MenuItem = ({ title, selected, setSelected, colors}) => {
+  return (
+    <ListItem>
+      <ListItemButton 
+        onClick={() => setSelected(title)} 
+        selected={selected === title} 
+        sx={{ 
+          borderRadius: 50, 
+          color: selected === title ? colors.bleuDeFrance[500] : '#c2c2c2'
+        }}
+      >
+        <ListItemText primary={title} />
+      </ListItemButton>
+    </ListItem>
+  )
+}
 
 const Account = () => {
 
   const { user } = UserAuth();
-  const { roles } = Global();
+  const { roles, courses } = Global();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [selected, setSelected] = useState('My Profile');
-  const [edit, setEdit] = useState();
   const user_role = roles.find(r => r.type === user.role);
+  const menus = ['My Profile', 'Security', user.role === 3 && 'Courses'];
+  const [displayCourses, setDisplayCourses] = useState([]);
+  const navigate = useNavigate();
 
+  const handleOpenCourses = (course) => {
+    navigate(`/Courses/${course._id}`, {state: {data: course}});
+  }
+
+  useEffect(() => {
+    if (user.role !== 1) {
+      axios.post('/getData', {
+        collection: 'usercourses',
+        filter: {user_id: user._id, status: 'Accepted'}
+    }).then((res) => {
+        if (res.data) {
+            res.data.forEach((course) => {
+              setDisplayCourses((prev) => [...prev, courses.find(c => c['_id'] === course.course_id)]);
+            });
+        }
+    }).catch((err) => toast.warning(err));
+    }
+  }, [user, courses]);
 
   return (
     <Box flexGrow={1}>
@@ -29,29 +69,28 @@ const Account = () => {
       </Box>
       <Block>
         <Grid container spacing={2} sx={{ pb: 0 }}>
-          <Grid item xs={12} md={3} sx={{ borderRight: { md: '1px solid #d2d2d2' } }}>
+          <Grid item xs={12} md={3} lg={2} sx={{ borderRight: { md: '1px solid #d2d2d2' } }}>
             <BlockContent>
               <List>
-                <ListItem>
-                  <ListItemButton onClick={() => setSelected('My Profile')} selected={selected === 'My Profile'} sx={{ borderRadius: 50, color: selected === 'My Profile' ? colors.bleuDeFrance[500] : '#c2c2c2' }}>
-                    <ListItemText primary='My Profile' />
-                  </ListItemButton>
-                </ListItem>
-                <ListItem>
-                  <ListItemButton onClick={() => setSelected('Security')} selected={selected === 'Security'} sx={{ borderRadius: 50, color: selected === 'Security' ? colors.bleuDeFrance[500] : '#c2c2c2' }}>
-                    <ListItemText primary='Security' />
-                  </ListItemButton>
-                </ListItem>
+                { menus.map((m, i) => (
+                  <MenuItem 
+                    key={i}
+                    title={m}
+                    selected={selected}
+                    setSelected={setSelected}
+                    colors={colors}
+                  />
+                ))}
               </List>
             </BlockContent>
           </Grid>
-          <Grid item xs={12} md={9}>
+          <Grid item xs={12} md={9} lg={10}>
             <BlockContent>
               <Box mb={2} display='flex' alignItems='center'>
-                { selected.includes('Update') && (
+                {selected.includes('Update') && (
                   <IconButton onClick={() => setSelected('My Profile')}>
-                  <ArrowBackIosNewRoundedIcon />
-                </IconButton>
+                    <ArrowBackIosNewRoundedIcon />
+                  </IconButton>
                 )}
                 <Typography variant='h5' fontWeight='bold' align='left'>{selected}</Typography>
               </Box>
@@ -67,9 +106,9 @@ const Account = () => {
                       <Grid item md={7}>
                         <BlockContent>
                           <Typography align='left' fontWeight='bold'>{user.firstname} {user.lastname}</Typography>
-                          <Typography align='left'>{ user.username }</Typography>
-                          <Typography align='left'>{ user_role.name }</Typography>
-                          <Typography align='left'>DOB: { user.dob }</Typography>
+                          <Typography align='left'>{user.username}</Typography>
+                          <Typography align='left'>{user_role.name}</Typography>
+                          <Typography align='left'>DOB: {user.dob}</Typography>
                         </BlockContent>
                       </Grid>
                       <Grid item md={2}>
@@ -112,11 +151,11 @@ const Account = () => {
                         <BlockContent>
                           <Box mb={2}>
                             <Typography align='left'>Country</Typography>
-                            <Typography fontWeight='bold' align='left'>United States</Typography>
+                            <Typography fontWeight='bold' align='left'>{user.country || 'United States'}</Typography>
                           </Box>
                           <Box mb={2}>
                             <Typography align='left'>Postal Code</Typography>
-                            <Typography fontWeight='bold' align='left'>84081</Typography>
+                            <Typography fontWeight='bold' align='left'>{user.zipcode || '84081'}</Typography>
                           </Box>
                         </BlockContent>
                       </Grid>
@@ -124,11 +163,11 @@ const Account = () => {
                         <BlockContent>
                           <Box mb={2}>
                             <Typography align='left'>City/State</Typography>
-                            <Typography fontWeight='bold' align='left'>West Jordan, Utah</Typography>
+                            <Typography fontWeight='bold' align='left'>{user.city ? `${user.city}, ${user.state}` : 'Lehi, Utah'}</Typography>
                           </Box>
                           <Box mb={2}>
                             <Typography align='left'>Street</Typography>
-                            <Typography fontWeight='bold' align='left'>{user.address}</Typography>
+                            <Typography fontWeight='bold' align='left'>{user.address || 'Tmp 123'}</Typography>
                           </Box>
                         </BlockContent>
                       </Grid>
@@ -145,16 +184,25 @@ const Account = () => {
                   <Typography variant='h6' fontWeight='bold' align='left'>Update Password</Typography>
                   <UpdatePasswordForm />
                 </Box>
+              ) : selected === 'Courses' ? (
+                <Box>
+                  <CollapseList 
+                    title=''
+                    data={displayCourses}
+                    fields={['Course Title', 'Classroom Number']}
+                    handleOpen={handleOpenCourses}
+                  />
+                </Box>
               ) : (
                 <Box>
-                  { selected === 'Update Profile' && (
-                    <UpdateProfileForm setSelected={setSelected}/>
+                  {selected === 'Update Profile' && (
+                    <UpdateProfileForm setSelected={setSelected} />
                   )}
-                  { selected === 'Update Contact' && (
+                  {selected === 'Update Contact' && (
                     <UpdateContactForm setSelected={setSelected} />
                   )}
-                  { selected === 'Update Address' && (
-                    <UpdateAddressForm />
+                  {selected === 'Update Address' && (
+                    <UpdateAddressForm setSelected={setSelected} />
                   )}
                 </Box>
               )}
