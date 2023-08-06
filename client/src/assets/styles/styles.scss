@@ -204,3 +204,16 @@ body,
     padding: 15px;
     margin-bottom: 1.5rem;
 }
+
+.loading-container {
+    background: RGBA(194,194,194,0.65);
+    z-index: 100000;
+    position: absolute;
+    right: 0;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

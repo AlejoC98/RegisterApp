@@ -98,12 +98,12 @@ const Account = () => {
                 <Box>
                   <Box className='bordered-box' flexGrow={1}>
                     <Grid container spacing={2}>
-                      <Grid item md={3}>
-                        <BlockContent>
+                      <Grid item md={3} lg={1}>
+                        <BlockContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                           <Avatar sx={{ width: 100, height: 100 }} src={user.fileDir} alt='profile' />
                         </BlockContent>
                       </Grid>
-                      <Grid item md={7}>
+                      <Grid item md={7} lg={9}>
                         <BlockContent>
                           <Typography align='left' fontWeight='bold'>{user.firstname} {user.lastname}</Typography>
                           <Typography align='left'>{user.username}</Typography>
@@ -111,7 +111,7 @@ const Account = () => {
                           <Typography align='left'>DOB: {user.dob}</Typography>
                         </BlockContent>
                       </Grid>
-                      <Grid item md={2}>
+                      <Grid item md={2} lg={2}>
                         <BlockContent>
                           <Button variant='outlined' onClick={() => setSelected('Update Profile')}>Edit</Button>
                         </BlockContent>

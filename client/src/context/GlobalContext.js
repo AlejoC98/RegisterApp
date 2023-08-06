@@ -22,7 +22,7 @@ export const GlobalProvider = ({ children }) => {
         },
         {
             collection: 'menus',
-            filter: { role: user || 3}
+            filter: { role: user.role}
         },
         {
             collection: 'courses',
