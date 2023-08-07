@@ -11,12 +11,13 @@ import CollapseList from '../../components/CollapseList';
 const StudentDetails = () => {
     
     const location = useLocation();
-    const [data] = useState(location.state.data);
+    const [data, setData] = useState(location.state.data);
     const navigate = useNavigate();
     const { courses } = Global();
     const [displayStudentCourses, setDisplayStudentCourses] = useState([]);
 
     useEffect(() => {
+        setData(location.state.data);
         axios.post('/getData', {
             collection: 'usercourses',
             filter: {user_id: data._id}
@@ -27,7 +28,7 @@ const StudentDetails = () => {
                 });
             }
         }).catch((err) => toast.warning(err));
-    }, [data, courses]);
+    }, [location, data, courses]);
 
     const handleBack = () => {
         navigate('/Students');

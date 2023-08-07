@@ -13,7 +13,9 @@ const CollapseList = ({ title, data, fields, handleOpen }) => {
                             <ListItemText primary={ fields[0] === 'fullname' ? `${ele.firstname} ${ele.lastname}` : ele[fields[0]]} secondary={ele[fields[1]]} />
                         </ListItemButton>
                     </ListItem>
-                    <Divider />
+                    { (index + 1) !== data.length && (
+                        <Divider />
+                    )}
                 </Box>
             ))}
         </List>

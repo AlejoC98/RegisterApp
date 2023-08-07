@@ -34,10 +34,10 @@ const CoursesForm = () => {
 
   const handleSubmit = (values, {resetForm}) => {
     const insertData = {
-      'Course ID': values.id,
+      'Course ID': `CSCI-${values.id}`,
       'Course Title': values.title,
       'Course Description': values.description,
-      'Classroom Number': values.classroom,
+      'Classroom Number': `LAB-${values.classroom}`,
       'Capacity': values.capacity,
       'Credit Hours': values.credits,
       'Tuition Cost': values.cost,

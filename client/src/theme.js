@@ -81,6 +81,17 @@ export const tokens = (mode) => ({
           800: "#103660",
           900: "#081b30"
         },
+        richBlack: {
+            100: "#d0d1d3",
+            200: "#a2a4a7",
+            300: "#73767a",
+            400: "#45494e",
+            500: "#161b22",
+            600: "#12161b",
+            700: "#0d1014",
+            800: "#090b0e",
+            900: "#040507"
+        },
     } : {
         cosmicLatte: {
             100: "#31312d",
@@ -159,6 +170,17 @@ export const tokens = (mode) => ({
             800: "#a9cff9",
             900: "#d4e7fc",
         },
+        richBlack: {
+            100: "#040507",
+            200: "#090b0e",
+            300: "#0d1014",
+            400: "#12161b",
+            500: "#161b22",
+            600: "#45494e",
+            700: "#73767a",
+            800: "#a2a4a7",
+            900: "#d0d1d3",
+        },
     })
 });
 
@@ -188,7 +210,8 @@ export const themeSettings = (mode) => {
                 }
             } : {
                 primary: {
-                    main: colors.munsell[500]
+                    // main: '#ffffff'
+                    main: colors.cosmicLatte[500]
                 },
                 secondary: {
                     main: colors.magenta[500]
@@ -199,10 +222,10 @@ export const themeSettings = (mode) => {
                     light: colors.ghostWhite[100]
                 },
                 background: {
-                    default: colors.magenta[500],
+                    default: colors.richBlack[500],
                 },
                 text: {
-                    primary: '#000 !important'
+                    primary: colors.cosmicLatte[500]
                 }
             }
             )

@@ -186,12 +186,16 @@ const Account = () => {
                 </Box>
               ) : selected === 'Courses' ? (
                 <Box>
-                  <CollapseList 
-                    title=''
-                    data={displayCourses}
-                    fields={['Course Title', 'Classroom Number']}
-                    handleOpen={handleOpenCourses}
-                  />
+                  { displayCourses.length > 0 ? (
+                    <CollapseList 
+                      title=''
+                      data={displayCourses}
+                      fields={['Course Title', 'Classroom Number']}
+                      handleOpen={handleOpenCourses}
+                    />
+                  ) : (
+                    <Typography variant='h4'>You are not registered for any courses at this moment!</Typography>
+                  )}
                 </Box>
               ) : (
                 <Box>

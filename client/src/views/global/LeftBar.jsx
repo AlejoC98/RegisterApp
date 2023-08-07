@@ -1,15 +1,16 @@
-import { Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
+import { Box, IconButton, List, ListItemButton, ListItemIcon, ListItemText, useTheme } from '@mui/material'
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import logo from '../../assets/images/Logo.png';
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+// import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import axios from 'axios';
 import { UserAuth } from '../../context/UserContext';
 import { toast } from 'react-toastify';
 import { Global } from '../../context/GlobalContext';
 import { getIconComponent } from '../../components/global';
+import { tokens } from '../../theme';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
     return (
@@ -32,6 +33,8 @@ const LeftBar = ({ collapse, handleCollapse }) => {
     const [selected, setSelected] = useState("Dashboard");
     const { setUserToken } = UserAuth();
     const { menus } = Global();
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
 
     const handleLogOut = () => {
         axios.post('/auth/logout').then((res) => {
@@ -46,7 +49,7 @@ const LeftBar = ({ collapse, handleCollapse }) => {
     }
 
   return (
-    <Box className={`sidebar ${collapse ? 'close' : 'open'}`} backgroundColor='#fff'>
+    <Box className={`sidebar ${collapse ? 'close' : 'open'}`} backgroundColor={ theme.palette.mode === 'light' ? '#ffffff' : colors.richBlack[600]}>
         <Box>
             <IconButton onClick={handleCollapse} color='primary'>
                 <MenuRoundedIcon />
@@ -71,12 +74,12 @@ const LeftBar = ({ collapse, handleCollapse }) => {
         </Box>
         <Box className='bottom-menu-section'>
             <List className='menu'>
-                <ListItemButton LinkComponent={Link} to='/Settings'>
+                {/* <ListItemButton LinkComponent={Link} to='/Settings'>
                     <ListItemIcon>
                         <SettingsRoundedIcon />
                     </ListItemIcon>
                     <ListItemText primary='Settings' />
-                </ListItemButton>
+                </ListItemButton> */}
                 <ListItemButton onClick={handleLogOut}>
                     <ListItemIcon>
                         <LogoutRoundedIcon />

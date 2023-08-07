@@ -33,7 +33,12 @@ input[type=number] {
   /* Nearly transparent light black color for the scrollbar thumb */
   ::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.2); /* Adjust the alpha value (0.2) for transparency */
+    // background-color: rgba(0, 0, 0, 0.2);
     border-radius: 4px; /* Rounded border */
+  }
+
+  *::-webkit-scrollbar-corne {
+    background: transparent;
   }
   
   /* For Firefox */
@@ -56,6 +61,7 @@ html,
 body,
 #root,
 .app {
+    transition: background-color ease .2s;
     height: 100%;
     width: 100%;
     margin: 0;
@@ -72,7 +78,7 @@ body,
 }
 
 .sidebar {
-    transition: all ease .4s;
+    transition: all ease .2s;
     position: fixed;
     width: 4rem;
     height: 100%;

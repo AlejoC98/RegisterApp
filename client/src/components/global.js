@@ -255,13 +255,13 @@ export const countries = [
 ];
 
 export const Block = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#ffffff',
+    backgroundColor: theme.palette.mode === 'dark' ? '#0d1014' : '#ffffff',
     ...theme.typography.body2,
     padding: theme.spacing(2),
     textAlign: 'center',
     height: '100%',
     color: theme.palette.text.secondary,
-    boxShadow: '7px 5px 12px -4px rgba(148,148,148,1)',
+    boxShadow: `6px 8px 5px 0px ${theme.palette.mode === 'light' ? 'rgba(156,156,156,0.75)' : 'rgba(43,43,43,0.75)'}`,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
