@@ -22,6 +22,7 @@ import TeachersDetails from "./views/teachers/TeachersDetails";
 import StudentDetails from "./views/students/StudentDetails";
 import { ColorModeContext, useMode } from "./theme";
 import { ThemeProvider } from "@emotion/react";
+import SchoolingFees from "./views/account/SchoolingFees";
 
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
                   <Route path="/Notifications/:id" element={<Notification />} />
                   <Route path="/Settings" element={<Settings />} />
                   <Route path="/Account" element={<Account />} />
+                  <Route path="/Account/SchoolingFees" element={<SchoolingFees />} />
                 </Route>
               </Route>
             </Routes>

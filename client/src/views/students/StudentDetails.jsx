@@ -24,7 +24,9 @@ const StudentDetails = () => {
         }).then((res) => {
             if (res.data) {
                 res.data.forEach((course) => {
-                    setDisplayStudentCourses((prev) => [...prev, courses.find(c => c['_id'] === course.course_id)]);
+                    setDisplayStudentCourses(
+                        (prev) => [...prev, courses.find(c => c['_id'] === course.course_id)]
+                    );
                 });
             }
         }).catch((err) => toast.warning(err));

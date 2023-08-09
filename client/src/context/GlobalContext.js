@@ -11,6 +11,7 @@ export const GlobalProvider = ({ children }) => {
     const [roles, setRoles] = useState([]);
     const [menus, setMenus] = useState([]);
     const [courses, setCourses] = useState([]);
+    const [userCourses, setUserCourses] = useState([]);
     const [students, setStudents] = useState([]);
     const [teachers, setTeachers] = useState([]);
     const [notifications, setNotifications] = useState([]);
@@ -44,6 +45,10 @@ export const GlobalProvider = ({ children }) => {
             collection: 'users',
             filter: { role: 3 }
         },
+        {
+            collection: 'usercourses',
+            filter: user.role === 1 ? {} : { user_id: user._id}
+        }
     ], [user]);
 
     // Update List Function
@@ -57,6 +62,9 @@ export const GlobalProvider = ({ children }) => {
                 break;
             case 'courses':
                 setCourses((prev) => [...prev, newItem]);
+                break;
+            case 'usercourses':
+                setUserCourses((prev) => [...prev, newItem]);
                 break;
             case 'notifications':
                 setNotifications((prev) => [...prev, newItem]);
@@ -85,6 +93,9 @@ export const GlobalProvider = ({ children }) => {
                         break;
                     case 'courses':
                         setCourses(res.data);
+                        break;
+                    case 'usercourses':
+                        setUserCourses(res.data);
                         break;
                     case 'notifications':
                         setNotifications(res.data);
@@ -138,7 +149,7 @@ export const GlobalProvider = ({ children }) => {
 
     }, [user, getData]);
 
-    return <GlobalContext.Provider value={{ roles, menus, notifications, courses, teachers, students, updateList, getData }}>{children}</GlobalContext.Provider>;    
+    return <GlobalContext.Provider value={{ roles, menus, notifications, courses, userCourses, teachers, students, updateList, getData }}>{children}</GlobalContext.Provider>;    
 
 }
 

@@ -43,6 +43,7 @@ const createRecord = async (collection, data, validation = {}) => {
     const status = await validateRecord(collectiondb, validation);
 
     if (!status || Object.keys(validation).length === 0) {
+        data['created'] = new Date();
         const newRecord = await collectiondb.insertOne(data);
         return newRecord.insertedId;
     } else {
@@ -53,7 +54,13 @@ const createRecord = async (collection, data, validation = {}) => {
 
 const createManyRecords = async (collection, data) => {
     const collectiondb = await getCollection(collection);
-    const newRecords = await collectiondb.insertMany(data);
+
+    const insertData = data.map(item => ({
+        ...item,
+        created: new Date()
+    }));
+
+    const newRecords = await collectiondb.insertMany(insertData);
     return newRecords.insertedIds;
 }
 
@@ -64,7 +71,7 @@ const findRecord = async (collection, filter = {}) => {
         filter._id = new ObjectId(filter._id);
     }
 
-    const found = await collectiondb.find(filter).toArray();
+    const found = await collectiondb.find(filter).sort({ created: -1 }).toArray();
     return found;
 }
 
@@ -94,6 +101,7 @@ const User = {
             throw new Error('Username already exists');
         }
         data.password = await bcrypt.hash(data.password, 10);
+        data['created'] = new Date();
         const newUser = await users.insertOne(data);
         return newUser.insertedId;
     },

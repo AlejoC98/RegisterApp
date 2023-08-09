@@ -10,8 +10,11 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import MaskTextField from '../../components/MaskTextField';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { UserAuth } from '../../context/UserContext';
 
 const RegisterForm = ({ type }) => {
+
+    const { user } = UserAuth();
 
     const initialValues = {
         firstname: '',
@@ -32,8 +35,10 @@ const RegisterForm = ({ type }) => {
         lastname: yup.string().required('This field is required!'),
         username: yup.string().required('This field is required!'),
         role: yup.number().required('This field is required!'),
-        password: yup.string().min(6, 'Password must be at least 6 characters').required('Password required!'),
-        confirmPassword: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match').required('Confirm Password is required'),
+        password: yup.string().min(6, 
+            'Password must be at least 6 characters').required('Password required!'),
+        confirmPassword: yup.string().oneOf([yup.ref('password'), null], 
+            'Passwords must match').required('Confirm Password is required'),
         dob: yup.string().required('This field is required!'),
         email: yup.string().required('This field is required!'),
         phone: yup.string().required('This field is required!'),
@@ -53,6 +58,8 @@ const RegisterForm = ({ type }) => {
         Object.keys(values).forEach(key => {
             formData.append(key, values[key]);
         });
+        
+        formData.append('creator_role', user !== undefined ? user.role : 0);
 
         axios.post('/auth/register', formData).then((res) => {
             resetForm();

@@ -10,7 +10,7 @@ import UpdateProfileForm from '../../components/forms/UpdateProfileForm';
 import UpdateAddressForm from '../../components/forms/UpdateAddressForm';
 import UpdateContactForm from '../../components/forms/UpdateContactForm';
 import CollapseList from '../../components/CollapseList';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -33,15 +33,17 @@ const MenuItem = ({ title, selected, setSelected, colors}) => {
 
 const Account = () => {
 
+  const navigate = useNavigate();
+  const location = useLocation();
   const { user } = UserAuth();
   const { roles, courses } = Global();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [selected, setSelected] = useState('My Profile');
+  const active = location.state ? location.state.active : 'My Profile';
+  const [selected, setSelected] = useState(active);
   const user_role = roles.find(r => r.type === user.role);
-  const menus = ['My Profile', 'Security', user.role === 3 && 'Courses'];
+  const menus = ['My Profile', 'Security', user.role === 3 || user.role === 2 ? 'Courses' : ''];
   const [displayCourses, setDisplayCourses] = useState([]);
-  const navigate = useNavigate();
 
   const handleOpenCourses = (course) => {
     navigate(`/Courses/${course._id}`, {state: {data: course}});

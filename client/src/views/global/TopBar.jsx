@@ -124,7 +124,7 @@ const TopBar = () => {
 
   const handleSearch = (e) => {
     let keyWord = e.target.value.toLowerCase();
-    let allData = [...courses, ...students, ...teachers];
+    let allData = user.role === 1 ? [...courses, ...students, ...teachers]: user.role === 2 ? [...courses, ...students, ...teachers] : user.role === 3 ? [...courses, ...teachers] : [];
     let results = [];
   
     if (keyWord !== '') {
@@ -226,7 +226,7 @@ const TopBar = () => {
       onClose={handleMenuClose}
       sx={{ '.MuiMenu-paper': 
         {
-          backgroundColor: theme.palette.mode === 'light' ? colors.ghostWhite[500] : colors.richBlack[500] 
+          backgroundColor: theme.palette.mode === 'light' ? colors.ghostWhite[500] : colors.richBlack[500],
         }
       }}
     >
@@ -234,12 +234,8 @@ const TopBar = () => {
         <Paper sx={{
           maxHeight: 200,
           minWidth: 200,
-          maxWidth: 250,
-          '& :hover': { 
-            backgroundColor: 
-              theme.palette.mode === 'light' ? colors.ghostWhite[400] : colors.richBlack[500]
-          }
-          // overflowY: 'scroll',
+          maxWidth: 270,
+          overflowY: 'auto',
         }}>
           {displaNotifications.map((noti) => (
             <MenuItem 

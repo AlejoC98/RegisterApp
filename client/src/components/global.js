@@ -1,6 +1,7 @@
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import * as icons from "@mui/icons-material";
+import axios from 'axios';
 
 export const usStates = [
   { name: 'Alabama', code: 'AL' },
@@ -304,4 +305,48 @@ export const getIconComponent = (iconName) => {
   }
   // Handle case when the icon is not found
   return null;
+};
+
+export const calculateStudentTuitions = (userCourses, coursesData) => {
+  var price = 0;
+  userCourses.forEach(course => {
+    var cData = coursesData.find(c => c._id === course);
+    if (cData) {
+      var course_price = cData['Tuition Cost'].replace('$', '');
+      course_price = course_price.replace(',', '');
+      price += parseInt(course_price);
+    }
+  });
+
+  return price.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+export const getNextHoliday = () => {
+  return new Promise((resolve, reject) => {
+    axios.get('https://date.nager.at/api/v3/PublicHolidays/2023/US')
+      .then((res) => {
+        if (res.data) {
+          const currentDate = new Date();
+          const nextHolidays = res.data.filter(holiday => new Date(holiday.date) > currentDate);
+
+          if (nextHolidays.length > 0) {
+            nextHolidays.sort((a, b) => new Date(a.date) - new Date(b.date));
+            const holidateDate = new Date(nextHolidays[0].date);
+            const formattedDate = `${holidateDate.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric'})} ${nextHolidays[0].name}`;
+            resolve(formattedDate);
+          } else {
+            resolve('Next Holiday for next year');
+          }
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        reject(err);
+      });
+  });
 };

@@ -102,11 +102,12 @@ app.post('/auth/login', async(req, res) => {
 });
 
 app.post('/auth/register', upload.single('profile'), async(req, res) => {
-    let { firstname, lastname, username, password, dob, email, phone, address, status, role } = req.body;
+    let { firstname, lastname, username, password, dob, email, phone, address, status, role, creator_role } = req.body;
     let fileDir;
     firstname = firstname.charAt(0).toUpperCase() + firstname.slice(1);
     lastname = lastname.charAt(0).toUpperCase() + lastname.slice(1);
     username = username.toLowerCase();
+    let message = 'User created, please wait for aproval';
 
     try {
         const { buffer, mimetype } = req.file;
@@ -126,23 +127,50 @@ app.post('/auth/register', upload.single('profile'), async(req, res) => {
 
         await s3.send(uploadCommand);
 
-        // const getObjectParams = {
-        //     Bucket: bucketName,
-        //     Key: imageName
-        // }
-
-        // const command = new GetObjectCommand(getObjectParams);
-
-        // fileDir = await getSignedUrl(s3, command);
         fileDir = `https://${bucketName}.s3.amazonaws.com/${imageName}`;
     } catch (error) {
         fileDir = 'https://registerapp.s3.us-east-2.amazonaws.com/default-profile.png';
     }
 
     try {
-        const insertId = await User.create({firstname, lastname, username, password, dob, email, phone, address, status, fileDir, role});
-        await createRecord('notifications', { title: 'User request', subtitle: `${firstname} ${lastname} has request to join.`, to: '/Notifications', icon: 'PersonRounded', role: 1, open: false, status: 'Pending', reference: insertId, type: 'users', user_id: ''});
-        res.send({ message: 'User created, please wait for aproval', status: true });
+
+        status = creator_role === 1 ? 'Approved' : status;
+
+        const insertId = await User.create({
+            firstname, 
+            lastname, 
+            username, 
+            password, 
+            dob, 
+            email, 
+            phone, 
+            address, 
+            status, 
+            fileDir, 
+            role
+        });
+
+        if (creator_role !== 1) {
+            await createRecord('notifications', 
+                { 
+                    title: 'User request', 
+                    subtitle: `${firstname} ${lastname} has request to join.`, 
+                    to: '/Notifications', 
+                    icon: 'PersonRounded', 
+                    role: 1, 
+                    open: false, 
+                    status: 'Pending', 
+                    reference: insertId, 
+                    type: 'users', 
+                    user_id: ''
+                }
+            );
+        } else {
+            message = 'User created!'
+        }
+
+        res.send({ message: message, status: true });
+
     } catch (error) {
         res.status(404).send({ message: error.message });
     }

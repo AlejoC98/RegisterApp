@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 
 const UserRequest = ({ data }) => {
 
-    const { roles } = Global();
+    const { roles, updateList } = Global();
     const selectRoles = handleRolesSelectData(roles);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -46,6 +46,9 @@ const UserRequest = ({ data }) => {
                     values: data
                 }).then((res) => {
                     if (res.data.status) {
+                        if (user.status === 'Approved') {
+                            updateList(user.role === 3 ? 'students': 'teachers', user);
+                        }
                         setTimeout(() => {
                             navigate('/Dashboard');
                         }, 2000);
@@ -93,8 +96,19 @@ const UserRequest = ({ data }) => {
                                                 dataElement.push(
                                                     <Grid item md={12}>
                                                         <BlockContent>
-                                                            <Typography fontWeight='bold'>{label}:</Typography>
-                                                            <Typography>{ user[label] === '2' ? 'Teacher' : user[label] === '3' ? 'Student' : '' }</Typography>
+                                                            <Typography 
+                                                                fontWeight='bold'
+                                                            >
+                                                                {label}:
+                                                            </Typography>
+                                                            <Typography>
+                                                                { user[label] === '2' ?
+                                                                    'Teacher' 
+                                                                : user[label] === '3' ?
+                                                                    'Student' 
+                                                                    : '' 
+                                                                }
+                                                                </Typography>
                                                         </BlockContent>
                                                     </Grid>);
                                             }
@@ -102,9 +116,21 @@ const UserRequest = ({ data }) => {
                                         case 'fileDir':
                                             dataElement.push(
                                                 <Grid item md={12}>
-                                                    <BlockContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                                        <Typography><strong>Image Profile:</strong> </Typography>
-                                                        <Avatar alt='user' src={user[label]} sx={{ width: 76, height: 76 }} />
+                                                    <BlockContent 
+                                                        sx={{ 
+                                                            display: 'flex',
+                                                            flexDirection: 'column',
+                                                            alignItems: 'center' 
+                                                        }}
+                                                    >
+                                                        <Typography>
+                                                            <strong>Image Profile:</strong>
+                                                        </Typography>
+                                                        <Avatar 
+                                                            alt='user' 
+                                                            src={user[label]} 
+                                                            sx={{ width: 76, height: 76 }} 
+                                                        />
                                                     </BlockContent>
                                                 </Grid>);
                                             break;
@@ -143,9 +169,29 @@ const UserRequest = ({ data }) => {
                                     </Grid>
                                 ) }
                                 <Grid item md={12}>
-                                    <BlockContent sx={{ display: 'flex', width: '100%', justifyContent: 'space-around'}}>
-                                        <Button variant='contained' color='success' type='submit' disabled={loading} onClick={() => { handleAccountStatus('Approved') }}>Approve</Button>
-                                        <Button variant='contained' color='error' type='submit' disabled={loading} onClick={() => { handleAccountStatus('Denied') }}>Denied</Button>
+                                    <BlockContent 
+                                        sx={{ 
+                                            display: 'flex', 
+                                            width: '100%', 
+                                            justifyContent: 'space-around'
+                                        }}
+                                    >
+                                        <Button 
+                                            variant='contained'
+                                            color='success'
+                                            type='submit'
+                                            disabled={loading || user.status !== 'Pending'}
+                                            onClick={() => handleAccountStatus('Approved') }>
+                                                Approve
+                                            </Button>
+                                        <Button 
+                                            variant='contained'
+                                            color='error'
+                                            type='submit'
+                                            disabled={loading || user.status !== 'Pending'}
+                                            onClick={() => handleAccountStatus('Denied') }>
+                                                Denied
+                                            </Button>
                                     </BlockContent>
                                 </Grid>
                             </Grid>
