@@ -1,5 +1,5 @@
 import { AppBar, Avatar, Badge, Box, Divider, FormControlLabel, IconButton, ListItem, ListItemAvatar, ListItemButton, ListItemText, Menu, MenuItem, Paper, Switch, Toolbar, Typography, useTheme } from '@mui/material'
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
@@ -121,6 +121,12 @@ const TopBar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const menuId = 'notification-menu';
+
+  useEffect(() => {
+    if (notifications.length > 0) {
+      console.log(notifications);
+    }
+  }, [notifications]);
 
   const handleSearch = (e) => {
     let keyWord = e.target.value.toLowerCase();
@@ -353,7 +359,8 @@ const TopBar = () => {
                 aria-haspopup='true'
                 onClick={handleNotificationMenuOpen}
               >
-                <Badge badgeContent={notifications.filter(n => n.open === false).length} color='error'>
+                {/* <Badge badgeContent={notifications.filter(n => n.open === false).length} color='error'> */}
+                <Badge badgeContent={notifications.length} color='error'>
                   <NotificationsRoundedIcon color='primary' />
                 </Badge>
               </IconButton>

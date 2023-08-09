@@ -13,11 +13,19 @@ const Admin = () => {
     axios.post('/createData', {
       collection: 'notifications',
       values: {
-        name: `Test #${count}`,
-        role: 1
+        title: 'Test', 
+        subtitle: 'Im testing it',
+        to: '/Notifications', 
+        icon: 'PersonRounded', 
+        role: 3, 
+        open: false, 
+        status: 'Pending', 
+        reference: '64b9b5f170a1fc450b0717b2', 
+        type: 'users', 
+        user_id: ''
       }
     }).then((res) => {
-      console.log(res.data);
+      // console.log(res.data);
       setCount(count + 1);
     }).catch((err) => toast.error(err));
   }

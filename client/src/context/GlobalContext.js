@@ -2,6 +2,8 @@ import axios from "axios";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { UserAuth } from './UserContext';
+import io from 'socket.io-client';
+export const socket = io.connect('http://localhost:4000');
 
 export const GlobalContext = createContext();
 
@@ -47,12 +49,12 @@ export const GlobalProvider = ({ children }) => {
         },
         {
             collection: 'usercourses',
-            filter: user.role === 1 ? {} : { user_id: user._id}
+            filter: { user_id: user._id}
         }
     ], [user]);
 
     // Update List Function
-    const updateList = (list, newItem) => {
+    const updateList = useCallback((list, newItem) => {
         switch (list) {
             case 'roles':
                 setRoles((prev) => [...prev, newItem]);
@@ -78,8 +80,8 @@ export const GlobalProvider = ({ children }) => {
             default:
                 toast.warning('List not found');
                 break;
-        }
-    }
+        }  
+    }, [setRoles, setMenus, setCourses, setUserCourses, setNotifications, setStudents, setTeachers]);
 
     const getData = useCallback(() => {
         requireData.forEach((c) => {
@@ -120,33 +122,21 @@ export const GlobalProvider = ({ children }) => {
             }).catch((err) => toast.error(err));
         });
     }, [requireData, setRoles, setMenus, setCourses, setTeachers, setStudents]);
+
+    const listenNotification = useCallback((data) => {
+        !notifications.some(n => n._id === data._id) && updateList('notifications', data);
+    }, [notifications, updateList]);
     
     useEffect(() => {
         if (user !== undefined && Object.keys(user).length > 0) {
             getData();
-        }
-
-        try {
-        const eventSource = new EventSource('http://localhost:4000/notification');
-
-            eventSource.onmessage = (event) => {
-                if (event.data !== 'undefined') {
-                    const newNoti = JSON.parse(event.data);
-                    if (newNoti.role === user.role || newNoti.user_id === user._id) {
-                        setNotifications((prev) => [...prev, newNoti]);
-                    }
-                } else {
-                    setNotifications([]);
-                }
-            }
             
-            return () => {
-                eventSource.close();
-            }
-        } catch (error) {
-            console.log(error);
-        }
+            socket.emit('newUser', user);
 
+            socket.on('getNotification', data => {
+                listenNotification(data);
+            });
+        }
     }, [user, getData]);
 
     return <GlobalContext.Provider value={{ roles, menus, notifications, courses, userCourses, teachers, students, updateList, getData }}>{children}</GlobalContext.Provider>;    
