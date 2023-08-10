@@ -17,7 +17,7 @@ const Admin = () => {
         subtitle: 'Im testing it',
         to: '/Notifications', 
         icon: 'PersonRounded', 
-        role: 3, 
+        role: 2, 
         open: false, 
         status: 'Pending', 
         reference: '64b9b5f170a1fc450b0717b2', 

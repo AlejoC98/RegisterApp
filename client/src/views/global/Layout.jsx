@@ -42,7 +42,7 @@ const AppLayout = () => {
                         pauseOnFocusLoss
                         draggable
                         pauseOnHover
-                        theme="light"
+                        theme={theme.palette.mode}
                     />
                     <LeftBar collapse={collapse} handleCollapse={handleCollapse} />
                     <main className={`content ${collapse ? 'close' : 'open'}`}>
@@ -87,7 +87,7 @@ const AuthLayout = () => {
                         pauseOnFocusLoss
                         draggable
                         pauseOnHover
-                        theme="light"
+                        theme={theme.palette.mode}
                     />
                     <Outlet />
                 </Box>

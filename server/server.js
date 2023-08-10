@@ -76,13 +76,13 @@ const sentNotificationsCache = new Set();
 // Initializing db and setting watch
 connectDB().then((db) => {
     const notificationColl = db.collection('notifications');
-    const notiStream = notificationColl.watch();
+    const notiStream = notificationColl.watch({ operationType: 'insert' });
 
     io.on('connection', (socket) => {
 
         socket.on('newUser', (user) => {
             addNewUser(user._id, socket.id);
-            socket.join(user.role.toString());
+            // socket.join(user.role.toString());
         });
 
         socket.on('disconnect', () => {
@@ -90,21 +90,9 @@ connectDB().then((db) => {
         });
 
         notiStream.on('change', (change) => {
-            var notification = change.fullDocument;
-            if (notification && notification._id && !sentNotificationsCache.has(notification._id.toString())) {
-                try {
-                    if (notification.user_id == '') {
-                        io.to(notification.role.toString()).emit('getNotification', notification);
-                    } else {
-                        var receiver = getUser(notification.user_id);
-                        io.to(receiver.socketId).emit('getNotification', notification);
-                    }
-
-                    sentNotificationsCache.add(notification._id.toString());
-                } catch (error) {
-                    console.log(error);
-                    console.log(notification);
-                }
+            if (change.operationType === 'insert') {
+                var notification = change.fullDocument;
+                socket.emit('getNotification', notification)
             }
         });
 

@@ -359,8 +359,7 @@ const TopBar = () => {
                 aria-haspopup='true'
                 onClick={handleNotificationMenuOpen}
               >
-                {/* <Badge badgeContent={notifications.filter(n => n.open === false).length} color='error'> */}
-                <Badge badgeContent={notifications.length} color='error'>
+                <Badge badgeContent={notifications.filter(n => n.open === false).length} color='error'>
                   <NotificationsRoundedIcon color='primary' />
                 </Badge>
               </IconButton>

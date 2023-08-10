@@ -34,8 +34,8 @@ export const GlobalProvider = ({ children }) => {
         {
             collection: 'notifications',
             filter: user.role === 1 ? { role: user.role, status: 'Pending' } : { $or:   [
-                { role: user.role },
-                { user_id: user._id }
+                { role: user.role, status: 'Pending' },
+                { user_id: user._id, status: 'Pending' }
               ]
             }
         },
@@ -55,6 +55,7 @@ export const GlobalProvider = ({ children }) => {
 
     // Update List Function
     const updateList = useCallback((list, newItem) => {
+        console.log(newItem);
         switch (list) {
             case 'roles':
                 setRoles((prev) => [...prev, newItem]);
@@ -122,10 +123,6 @@ export const GlobalProvider = ({ children }) => {
             }).catch((err) => toast.error(err));
         });
     }, [requireData, setRoles, setMenus, setCourses, setTeachers, setStudents]);
-
-    const listenNotification = useCallback((data) => {
-        !notifications.some(n => n._id === data._id) && updateList('notifications', data);
-    }, [notifications, updateList]);
     
     useEffect(() => {
         if (user !== undefined && Object.keys(user).length > 0) {
@@ -134,7 +131,19 @@ export const GlobalProvider = ({ children }) => {
             socket.emit('newUser', user);
 
             socket.on('getNotification', data => {
-                listenNotification(data);
+                try {
+                    if (data.user_id === '') {
+                        if (user.role === data.role) {
+                            updateList('notifications', data);
+                        }
+                    } else {
+                        if (user._id === data.user_id) {
+                            updateList('notifications', data);
+                        }
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
             });
         }
     }, [user, getData]);
