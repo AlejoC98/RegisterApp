@@ -229,3 +229,12 @@ body,
     height: 450px !important;
     padding: 2rem !important;
 }
+
+.full-width {
+    display: flex;
+    width: 100%;
+}
+
+.full-width.b-bottom {
+    border-bottom: 1px solid #e9ebec;
+}
