@@ -34,21 +34,21 @@ const Dashboard = () => {
         icon: <ListAltRoundedIcon sx={{ fontSize: { lg: 40, md: 40, sm: 30, xs: 30}}}/>,
         title: 'Courses',
         text: courses.length,
-        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[600],
+        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[400],
         action: () => navigate('/Courses')
       },
       {
         icon: <Diversity3RoundedIcon sx={{ fontSize: { lg: 40, md: 40, sm: 30, xs: 30}}}/>,
         title: 'Students',
         text: students.length,
-        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[600],
+        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[400],
         action: () =>  navigate('/Students')
       },
       {
         icon: <Groups2RoundedIcon sx={{ fontSize: { lg: 40, md: 40, sm: 30, xs: 30}}}/>,
         title: 'Teachers',
         text: teachers.length,
-        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[600],
+        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[400],
         action: () =>  navigate('/Teachers')
       },
       {
@@ -60,7 +60,7 @@ const Dashboard = () => {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         }),
-        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[600],
+        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[400],
         action: () => {}
       },
     ] : user.role === 2 ? [
@@ -68,28 +68,28 @@ const Dashboard = () => {
         icon: <AssignmentRoundedIcon sx={{ fontSize: { lg: 40, md: 40, sm: 30, xs: 30}}}/>,
         title: 'Assined Classes',
         text: userCourses.length,
-        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[600],
+        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[400],
         action: () => navigate('/Account', { state: { active: 'Courses' }})
       },
       {
         icon: <CalendarMonthRoundedIcon sx={{ fontSize: { lg: 40, md: 40, sm: 30, xs: 30}}}/>,
         title: 'School Year',
         text: 'August 2022 - May 2023',
-        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[600],
+        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[400],
         action: () => {}
       },
       {
         icon: <WorkHistoryRoundedIcon sx={{ fontSize: { lg: 40, md: 40, sm: 30, xs: 30}}}/>,
         title: 'Request Time Off',
         text: '',
-        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[600],
+        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[400],
         action: () => {}
       },
       {
         icon: <EventRoundedIcon sx={{ fontSize: { lg: 40, md: 40, sm: 30, xs: 30}}}/>,
         title: 'Next Holiday',
         text: nextHoliday || '',
-        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[600],
+        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[400],
         action: () => {}
       }
     ] : user.role === 3 ? [
@@ -97,21 +97,21 @@ const Dashboard = () => {
         icon: <ListAltRoundedIcon sx={{ fontSize: { lg: 40, md: 40, sm: 30, xs: 30}}}/>,
         title: 'Joined Courses',
         text: userCourses.length,
-        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[600],
+        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[400],
         action: () => navigate('/Account', { state: { active: 'Courses' }})
       },
       {
         icon: <EventRoundedIcon sx={{ fontSize: { lg: 40, md: 40, sm: 30, xs: 30}}}/>,
         title: 'Next Holiday',
         text: nextHoliday || '',
-        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[600],
+        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[400],
         action: () => {}
       },
       {
         icon: <AttachMoneyRoundedIcon sx={{ fontSize: { lg: 40, md: 40, sm: 30, xs: 30}}}/>,
         title: 'Tuitions Cost',
         text: user && userCourses.length > 0 ? calculateStudentTuitions(userCourses.map(c => c.course_id), courses) : '$0',
-        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[600],
+        color: theme.palette.mode === 'light' ? colors.richBlack[500] : colors.ghostWhite[400],
         action: () => navigate('/Account/SchoolingFees')
       },
     ] : [])
@@ -176,6 +176,7 @@ const Dashboard = () => {
         }
       });
 
+      console.log(resultArray);
       setUserPieChart({ data: resultArray, fill: fillData});
     }
 

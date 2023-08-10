@@ -1,5 +1,5 @@
 import { AppBar, Avatar, Badge, Box, Divider, FormControlLabel, IconButton, ListItem, ListItemAvatar, ListItemButton, ListItemText, Menu, MenuItem, Paper, Switch, Toolbar, Typography, useTheme } from '@mui/material'
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
@@ -122,11 +122,7 @@ const TopBar = () => {
   const colors = tokens(theme.palette.mode);
   const menuId = 'notification-menu';
 
-  useEffect(() => {
-    if (notifications.length > 0) {
-      console.log(notifications);
-    }
-  }, [notifications]);
+  console.log(notifications);
 
   const handleSearch = (e) => {
     let keyWord = e.target.value.toLowerCase();
@@ -202,6 +198,8 @@ const TopBar = () => {
               collection: 'courses',
               filter: { _id: noti.reference }
             }).then((res) => {
+              console.log(notifications);
+              console.log(notifications.find(n => n._id === noti._id));
               if (res.data) {
                 navigate(`${noti.to}/${noti.reference}`, { state: { data: res.data[0] } });
               }
@@ -218,22 +216,26 @@ const TopBar = () => {
   const notificationMenu = (
     <Menu
       anchorEl={anchorEl}
+      id={menuId}
+      keepMounted
+      open={isMenuOpen}
+      onClose={handleMenuClose}
       anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'right',
       }}
-      id={menuId}
-      keepMounted
       transformOrigin={{
         vertical: 'top',
         horizontal: 'right',
       }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-      sx={{ '.MuiMenu-paper': 
-        {
-          backgroundColor: theme.palette.mode === 'light' ? colors.ghostWhite[500] : colors.richBlack[500],
-        }
+      sx={{
+        '& .MuiList-root': {
+          padding: 0
+        },
+        '& .MuiMenu-paper': 
+          {
+            backgroundColor: theme.palette.mode === 'light' ? colors.ghostWhite[500] : colors.richBlack[500],
+          }
       }}
     >
       {displaNotifications.length > 0 ? (
@@ -250,8 +252,8 @@ const TopBar = () => {
               sx={{ 
                 backgroundColor: 
                   noti.open ? 
-                    theme.palette.mode === 'light' ? colors.richBlack[900] : colors.richBlack[400] 
-                  : theme.palette.mode === 'light' ? colors.ghostWhite[400] : colors.richBlack[600]
+                    theme.palette.mode === 'light' ? alpha(colors.richBlack[400], 0.10) : alpha(colors.richBlack[400], 0.40) 
+                  : theme.palette.mode === 'light' ? colors.ghostWhite[500] : colors.richBlack[400]
               }}
             >
               <ListItemAvatar>

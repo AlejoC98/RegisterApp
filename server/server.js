@@ -57,47 +57,45 @@ const s3 = new S3Client({
 // Functions
 const randomImageName = (bytes = 32) => crypto.randomBytes(bytes).toString('hex');
 
-let onlineUsers = [];
-
-const addNewUser = (username, socketId) => {
-    !onlineUsers.some(user => user.username === username) && onlineUsers.push({ username, socketId});
-}
-
-const removeUser = (socketId) => {
-    onlineUsers = onlineUsers.filter(user => user.socketId !== socketId);
-}
-
-const getUser = (id) => {
-    return onlineUsers.find(u => u._id === id);
-}
-
-const sentNotificationsCache = new Set();
-
 // Initializing db and setting watch
 connectDB().then((db) => {
     const notificationColl = db.collection('notifications');
-    const notiStream = notificationColl.watch({ operationType: 'insert' });
+    const notiStream = notificationColl.watch();
+
+    const userSocketMap = new Map(); // Map to store user-to-socket associations
 
     io.on('connection', (socket) => {
 
         socket.on('newUser', (user) => {
-            addNewUser(user._id, socket.id);
-            // socket.join(user.role.toString());
+            userSocketMap.set(user._id, socket);
         });
 
         socket.on('disconnect', () => {
-            removeUser(socket.id);
-        });
-
-        notiStream.on('change', (change) => {
-            if (change.operationType === 'insert') {
-                var notification = change.fullDocument;
-                socket.emit('getNotification', notification)
+            // Remove the user-to-socket mapping on disconnect
+            for (const [userId, existingSocket] of userSocketMap.entries()) {
+                if (existingSocket === socket) {
+                    userSocketMap.delete(userId);
+                    break;
+                }
             }
         });
 
     });
+
+    notiStream.on('change', (change) => {
+        if (change.operationType === 'insert') {
+            const notification = change.fullDocument;
+            const userId = notification.userId; // Assuming you have a userId in your notification
+            const socketForUser = userSocketMap.get(userId);
+
+            if (socketForUser) {
+                socketForUser.emit('getNotification', notification);
+            }
+        }
+    });
+
 });
+
 
 // Routes / Views
 app.post('/auth/login', async (req, res) => {
@@ -184,7 +182,6 @@ app.post('/auth/register', upload.single('profile'), async (req, res) => {
                     icon: 'PersonRounded',
                     role: 1,
                     open: false,
-                    status: 'Pending',
                     reference: insertId,
                     type: 'users',
                     user_id: ''
@@ -272,7 +269,19 @@ app.post('/createData', upload.single('file'), async (req, res) => {
                     response = await createRecord(collection, values, validation);
 
                     if (response) {
-                        await createRecord('notifications', { title: 'New Course', subtitle: 'There\'s a new course available', to: '/Courses', icon: 'ListAlt', role: 3, open: false, status: 'Pending', reference: response, type: 'course', user_id: '' });
+                        await createRecord('notifications', 
+                            { 
+                                title: 'New Course', 
+                                subtitle: 'There\'s a new course available', 
+                                to: '/Courses', 
+                                icon: 'ListAlt', 
+                                role: 3, 
+                                open: false, 
+                                reference: response, 
+                                type: 'course', 
+                                user_id: '' 
+                            }
+                        );
 
                         message = 'Course created!';
                     }
@@ -288,7 +297,20 @@ app.post('/createData', upload.single('file'), async (req, res) => {
 
                         requestedUser = requestedUser[0];
 
-                        await createRecord('notifications', { title: 'Joining Course', subtitle: `${requestedUser.firstname} ${requestedUser.lastname} has request to join this course.`, to: '/Notifications', icon: 'ListAlt', role: 1, open: false, status: 'Pending', reference: response, type: 'usercourses', user_id: '' }, validation);
+                        await createRecord('notifications', 
+                            { 
+                                title: 'Joining Course', 
+                                subtitle: `${requestedUser.firstname} ${requestedUser.lastname} has request to join this course.`, 
+                                to: '/Notifications', 
+                                icon: 'ListAlt', 
+                                role: 1, 
+                                open: false, 
+                                reference: response, 
+                                type: 'usercourses', 
+                                user_id: '' 
+                            }, 
+                            validation
+                        );
 
                         message = 'Your request has been sent, you have to wait for approval!';
                     }
@@ -326,7 +348,19 @@ app.post('/updateData', upload.single('file'), async (req, res) => {
                 if (response) {
                     await updateRecord('courses', { _id: values.course_id, 'Available': newAvailableSpace });
 
-                    await createRecord('notifications', { title: `Request ${values.status}`, subtitle: 'Check course', to: '/Courses', icon: values.status === 'Accepted' ? 'DoneOutlineRounded' : 'CancelRounded', role: 3, open: false, status: 'Pending', reference: values.course_id, type: 'course', user_id: values.user_id });
+                    await createRecord('notifications', 
+                        { 
+                            title: `Request ${values.status}`, 
+                            subtitle: 'Check course', 
+                            to: '/Courses', 
+                            icon: values.status === 'Accepted' ? 'DoneOutlineRounded' : 'CancelRounded', 
+                            role: 3, 
+                            open: false, 
+                            reference: values.course_id, 
+                            type: 'course', 
+                            user_id: values.user_id 
+                        }
+                    );
                 }
                 message = `Student ${values.status}`;
                 break;
