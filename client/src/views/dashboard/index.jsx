@@ -144,40 +144,44 @@ const Dashboard = () => {
     }
 
     if (userCourses.length > 0) {
-      const groupedData = userCourses.reduce((acc, current) => {
-        const course = courses.find(c => c._id === current.course_id);
-        var course_price = course['Tuition Cost'].replace('$', '');
-        course_price = parseInt(course_price.replace(',',''));
-        setGrossIncome((prev) => prev += course_price)
-        if (course) {
-          const courseTitle = course['Course Title'];
-          if (acc.hasOwnProperty(courseTitle)) {
-            acc[courseTitle].value++;
-          } else {
-            acc[courseTitle] = {
-              id: courseTitle,
-              label: courseTitle,
-              value: 1,
-              color: `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`,
-            };
+      try {
+        const groupedData = userCourses.reduce((acc, current) => {
+          const course = courses.find(c => c._id === current.course_id);
+          var course_price = course['Tuition Cost'].replace('$', '');
+          course_price = parseInt(course_price.replace(',',''));
+          setGrossIncome((prev) => prev += course_price)
+          if (course) {
+            const courseTitle = course['Course Title'];
+            if (acc.hasOwnProperty(courseTitle)) {
+              acc[courseTitle].value++;
+            } else {
+              acc[courseTitle] = {
+                id: courseTitle,
+                label: courseTitle,
+                value: 1,
+                color: `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`,
+              };
+            }
           }
-        }
-        return acc;
-      }, {});
-
-      const resultArray = Object.values(groupedData);
-
-      var fillData = resultArray.map(c => {
-        return {
-          match: {
-            id: c.id
-          },
-          id: 'dots'
-        }
-      });
-
-      console.log(resultArray);
-      setUserPieChart({ data: resultArray, fill: fillData});
+          return acc;
+        }, {});
+  
+        const resultArray = Object.values(groupedData);
+  
+        var fillData = resultArray.map(c => {
+          return {
+            match: {
+              id: c.id
+            },
+            id: 'dots'
+          }
+        });
+  
+        console.log(resultArray);
+        setUserPieChart({ data: resultArray, fill: fillData}); 
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     getNextHoliday().then((res) => {

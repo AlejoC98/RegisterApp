@@ -17,7 +17,7 @@ const Search = styled('div')(({ theme }) => ({
     },
     marginRight: theme.spacing(2),
     marginLeft: 0,
-    width: '100%',
+    width: 'clamp(100px , 50%, 300px) !important',
     [theme.breakpoints.up('sm')]: {
         marginLeft: theme.spacing(3),
         width: 'auto',
@@ -66,7 +66,7 @@ const BasicTable = ({ title, actions, headers, data, fields, color = 'transparen
     };
 
     const handleSearch = (keyword) => {
-        // setVisibleRows([]);
+        setVisibleRows([]);
         const searchResponse = data.filter(d => Object.values(d).find(v => {
             if (v !== null) {
                 v = v.toString().toLowerCase();
@@ -74,6 +74,7 @@ const BasicTable = ({ title, actions, headers, data, fields, color = 'transparen
                     return v;
                 }
             }
+            return false;
         }));
         setVisibleRows(searchResponse.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage));
     }   
@@ -97,7 +98,7 @@ const BasicTable = ({ title, actions, headers, data, fields, color = 'transparen
                 borderBottom='1px solid #e9ebec'
             >
                 <Typography variant='h4'>{title}</Typography>
-                <Search>
+                <Search className='testing'>
                     <SearchIconWrapper>
                         <SearchRoundedIcon />
                     </SearchIconWrapper>

@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import AssingTeacherForm from '../../components/forms/AssingTeacherForm';
 import { Global } from '../../context/GlobalContext';
 import CollapseList from '../../components/CollapseList';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
 
 const CourseDetails = () => {
     const { user, userCourses, setUserCoursesData } = UserAuth();
@@ -75,102 +76,113 @@ const CourseDetails = () => {
         <Box flexGrow={1}>
             { data && (
                 <Grid container spacing={2}>
-                <Grid item md={12}>
-                    <BlockContent sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <IconButton onClick={handleBack}>
-                            <ArrowBackIosNewRoundedIcon />
-                        </IconButton>
-                        {user.role === 3 ? (
-                            <Box>
-                                {joinedStatus === 'available' ? (
-                                    <DialogModal title='Join Course' buttonText='Join' buttonColor='secondary' content={<Box display='flex' justifyContent='center' alignItems='center' p={3}>
-                                        <Typography variant='h6'>Do you want to join this course?</Typography>
-                                    </Box>} actionButtons={{ disagree: { text: 'Cancel' }, agree: { text: 'Join', func: handleJoin } }} />
-                                ) : joinedStatus === 'Accepted' ? (
-                                    <Button variant='contained' color='error' onClick={handleLeave}>Leave</Button>
-                                ) : joinedStatus === 'Denied' ? (
-                                    <Typography variant='h6'>Unfortunately your request was denied!</Typography>
-                                ) : (
-                                    <Button variant='contained' disabled onClick={handleLeave}>Pending</Button>
-                                )}
-                            </Box>
-                        ) : user.role === 1 && (
-                            <Box display={courseTeacher !== undefined ? 'none' : 'block'}>
-                                <DialogModal title='Assign Teacher' buttonText='Assing Teacher' buttonColor='info' content={<AssingTeacherForm course={data} />} />
-                            </Box>
-                        )}
-                    </BlockContent>
-                </Grid>
-                <Grid item md={12}>
-                    <Block>
-                        <Grid container spacing={2}>
-                            <Grid item md={courseTeacher === undefined ? 4 : 3}>
-                                <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>ID:</Typography>
-                                <Typography>{data['Course ID']}</Typography>
-                            </Grid>
-                            <Grid item md={courseTeacher === undefined ? 4 : 3}>
-                                <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>ClassRoom Number:</Typography>
-                                <Typography>{data['Classroom Number']}</Typography>
-                            </Grid>
-                            <Grid item md={courseTeacher === undefined ? 4 : 3}>
-                                <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Title:</Typography>
-                                <Typography>{data['Course Title']}</Typography>
-                            </Grid>
-                            { courseTeacher !== undefined && (
-                                <Grid item md={3}>
-                                    <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Teacher:</Typography>
-                                    <Box display='flex' flexDirection='column' alignItems='center'>
-                                        <Avatar src={courseTeacher.fileDir} alt='profile'/>
-                                        <Typography>{courseTeacher.firstname} {courseTeacher.lastname}</Typography>
+                    <Grid item md={12}>
+                        <BlockContent sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <IconButton onClick={handleBack}>
+                                <ArrowBackIosNewRoundedIcon />
+                            </IconButton>
+                            {user.role === 3 ? (
+                                <Box>
+                                    {joinedStatus === 'available' ? (
+                                        <DialogModal title='Join Course' buttonText='Join' buttonColor='secondary' content={<Box display='flex' justifyContent='center' alignItems='center' p={3}>
+                                            <Typography variant='h6'>Do you want to join this course?</Typography>
+                                        </Box>} actionButtons={{ disagree: { text: 'Cancel' }, agree: { text: 'Join', func: handleJoin } }} />
+                                    ) : joinedStatus === 'Accepted' ? (
+                                        <Button variant='contained' color='error' onClick={handleLeave}>Leave</Button>
+                                    ) : joinedStatus === 'Denied' ? (
+                                        <Typography variant='h6'>Unfortunately your request was denied!</Typography>
+                                    ) : (
+                                        <Button variant='contained' disabled onClick={handleLeave}>Pending</Button>
+                                    )}
+                                </Box>
+                            ) : user.role === 1 && (
+                                <Box>
+                                    <Box display={courseTeacher !== undefined ? 'none' : 'block'}>
+                                        <DialogModal title='Assign Teacher' buttonText='Assing Teacher' buttonColor='info' content={<AssingTeacherForm course={data} />} />
                                     </Box>
-                                </Grid>
+                                    <Box>
+                                        <Button 
+                                            variant='outlined' 
+                                            color='secondary' 
+                                            endIcon={<EditRoundedIcon />}
+                                        >
+                                            Edit
+                                        </Button>
+                                    </Box>
+                                </Box>
                             )}
-                        </Grid>
-                    </Block>
-                </Grid>
-                <Grid item md={data['Course Description'].length > 400 ? 12 : 6}>
-                    <Block>
-                        <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Description:</Typography>
-                        <Typography>
-                            {data['Course Description']}
-                        </Typography>
-                    </Block>
-                </Grid>
-                <Grid item md={data['Course Description'].length > 400 ? 12 : 6}>
-                    <Block>
-                        <Grid container spacing={2}>
-                            <Grid item md={3}>
-                                <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Capacity:</Typography>
-                                <Typography>{data['Capacity']}</Typography>
-                            </Grid>
-                            <Grid item md={3}>
-                                <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Available Spaces:</Typography>
-                                <Typography>{data['Available']}</Typography>
-                            </Grid>
-                            <Grid item md={3}>
-                                <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Credit Hours:</Typography>
-                                <Typography>{data['Credit Hours']}</Typography>
-                            </Grid>
-                            <Grid item md={3}>
-                                <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Tuition Cost:</Typography>
-                                <Typography>{data['Tuition Cost']}</Typography>
-                            </Grid>
-                        </Grid>
-                    </Block>
-                </Grid>
-                { courseStudents.length > 0 && (
+                        </BlockContent>
+                    </Grid>
                     <Grid item md={12}>
                         <Block>
-                            <CollapseList 
-                                title='Current Students'
-                                data={courseStudents}
-                                fields={['fullname', 'username']}
-                                handleOpen={() => {}}
-                            />
+                            <Grid container spacing={2}>
+                                <Grid item md={courseTeacher === undefined ? 4 : 3}>
+                                    <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>ID:</Typography>
+                                    <Typography>{data['Course ID']}</Typography>
+                                </Grid>
+                                <Grid item md={courseTeacher === undefined ? 4 : 3}>
+                                    <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>ClassRoom Number:</Typography>
+                                    <Typography>{data['Classroom Number']}</Typography>
+                                </Grid>
+                                <Grid item md={courseTeacher === undefined ? 4 : 3}>
+                                    <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Title:</Typography>
+                                    <Typography>{data['Course Title']}</Typography>
+                                </Grid>
+                                { courseTeacher !== undefined && (
+                                    <Grid item md={3}>
+                                        <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Teacher:</Typography>
+                                        <Box display='flex' flexDirection='column' alignItems='center'>
+                                            <Avatar src={courseTeacher.fileDir} alt='profile'/>
+                                            <Typography>{courseTeacher.firstname} {courseTeacher.lastname}</Typography>
+                                        </Box>
+                                    </Grid>
+                                )}
+                            </Grid>
                         </Block>
                     </Grid>
-                )}
-            </Grid>
+                    <Grid item md={data['Course Description'].length > 400 ? 12 : 6}>
+                        <Block>
+                            <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Description:</Typography>
+                            <Typography>
+                                {data['Course Description']}
+                            </Typography>
+                        </Block>
+                    </Grid>
+                    <Grid item md={data['Course Description'].length > 400 ? 12 : 6}>
+                        <Block>
+                            <Grid container spacing={2}>
+                                <Grid item md={3}>
+                                    <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Capacity:</Typography>
+                                    <Typography>{data['Capacity']}</Typography>
+                                </Grid>
+                                <Grid item md={3}>
+                                    <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Available Spaces:</Typography>
+                                    <Typography>{data['Available']}</Typography>
+                                </Grid>
+                                <Grid item md={3}>
+                                    <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Credit Hours:</Typography>
+                                    <Typography>{data['Credit Hours']}</Typography>
+                                </Grid>
+                                <Grid item md={3}>
+                                    <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Tuition Cost:</Typography>
+                                    <Typography>{data['Tuition Cost']}</Typography>
+                                </Grid>
+                            </Grid>
+                        </Block>
+                    </Grid>
+                    { courseStudents.length > 0 && (
+                        <Grid item md={12}>
+                            <Block>
+                                <CollapseList 
+                                    title='Current Students'
+                                    data={courseStudents}
+                                    fields={['fullname', 'username']}
+                                    handleOpen={() => {}}
+                                />
+                            </Block>
+                        </Grid>
+                    )}
+                </Grid>
             )}
         </Box>
     )

@@ -55,22 +55,22 @@ const StudentDetails = () => {
                 <Avatar src={data.fileDir} alt='profile' sx={{ width: 160, height: 160}}/>
             </Block>
         </Grid>
-        <Grid item md={9}>
+        <Grid item md={6}>
             <Block>
                 <Grid container spacing={2}>
-                    <Grid item md={4}>
+                    <Grid item md={6}>
                         <BlockContent>
                             <Typography variant='h6' fontWeight='bold'>Firsname:</Typography>
                             <Typography>{ data.firstname }</Typography>
                         </BlockContent>
                     </Grid>
-                    <Grid item md={4}>
+                    <Grid item md={6}>
                         <BlockContent>
                             <Typography variant='h6' fontWeight='bold'>Lastname:</Typography>
                             <Typography>{ data.lastname }</Typography>
                         </BlockContent>
                     </Grid>
-                    <Grid item md={4}>
+                    <Grid item md={6}>
                         <BlockContent>
                             <Typography variant='h6' fontWeight='bold'>Username:</Typography>
                             <Typography>{ data.username }</Typography>
@@ -82,13 +82,18 @@ const StudentDetails = () => {
                             <Typography>{ data.email }</Typography>
                         </BlockContent>
                     </Grid>
-                    <Grid item md={6}>
-                        <BlockContent>
-                            <Typography variant='h6' fontWeight='bold'>Phone Number</Typography>
-                            <Typography>{ data.phone }</Typography>
-                        </BlockContent>
-                    </Grid>
                 </Grid>
+            </Block>
+        </Grid>
+        <Grid item md={3}>
+            <Block>
+                <Box m={2}>
+                    <Typography variant='h4' fontWeight='bold'>{ data.role === 1 ? 'Admin' : data.role === 2 ? 'Teacher' : data.role === 3 ? 'Student' : '' }</Typography>
+                </Box>
+                <Box m={2}>
+                    <Typography variant='h6' fontWeight='bold'>Joined On</Typography>
+                    <Typography>{ new Date(data.created).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric'}) }</Typography>
+                </Box>
             </Block>
         </Grid>
         { displayStudentCourses.length > 0 && (
