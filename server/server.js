@@ -430,7 +430,17 @@ app.post('/deleteData', async (req, res) => {
     let message = 'Record deleted!';
 
     try {
-        response = await deleteRecord(collection, filter);
+        switch (collection) {
+            case 'courses':
+                response = await deleteRecord(collection, filter);
+                if (response) {
+                    console.log(filter._id);
+                }
+                break;
+            default:
+                response = await deleteRecord(collection, filter);
+                break;
+        }
     } catch (error) {
         res.status(404).send({ message: error });
     }

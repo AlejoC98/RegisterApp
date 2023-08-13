@@ -60,7 +60,7 @@ const StudentDetails = () => {
                 <Grid container spacing={2}>
                     <Grid item md={6}>
                         <BlockContent>
-                            <Typography variant='h6' fontWeight='bold'>Firsname:</Typography>
+                            <Typography variant='h6' fontWeight='bold'>Firstname:</Typography>
                             <Typography>{ data.firstname }</Typography>
                         </BlockContent>
                     </Grid>

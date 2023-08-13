@@ -176,8 +176,6 @@ const Dashboard = () => {
             id: 'dots'
           }
         });
-  
-        console.log(resultArray);
         setUserPieChart({ data: resultArray, fill: fillData}); 
       } catch (error) {
         console.log(error);

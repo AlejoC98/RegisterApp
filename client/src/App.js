@@ -17,13 +17,11 @@ import ProtectedRoutes from "./ProtectedRoutes";
 import { UserProvider } from "./context/UserContext";
 import { GlobalProvider } from "./context/GlobalContext";
 import Notification from "./views/notifications";
-import CourseDetails from "./views/courses/CourseDetails";
-import TeachersDetails from "./views/teachers/TeachersDetails";
-import StudentDetails from "./views/students/StudentDetails";
 import { ColorModeContext, useMode } from "./theme";
 import { ThemeProvider } from "@emotion/react";
 import SchoolingFees from "./views/account/SchoolingFees";
-
+import Details from "./views/global/Details";
+import 'animate.css';
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -42,11 +40,23 @@ function App() {
                 <Route element={<AppLayout/>}>
                   <Route path="/Dashboard" element={<Dashboard />} />
                   <Route path="/Courses" element={<Courses />} />
-                  <Route path="/Courses/:id" element={<CourseDetails />} />
+                  <Route path="/Courses/:id" element={<Details columns={[
+                    {size: '12', direction: 'row', content: ['Course ID', 'Classroom Number', 'Course Title', 'Teacher ID']},
+                    {size: '6', direction: 'row', content: ['Course Description']},
+                    {size: '6', direction: 'row', content: ['Capacity', 'Available', 'Credit Hours', 'Tuition Cost']}
+                  ]} type={'Courses'} collapse={{title: 'Students', fields: ['fullname', 'username']}}  />} />
                   <Route path="/Students" element={<Students />} />
-                  <Route path="/Students/:id" element={<StudentDetails />} />
+                  <Route path="/Students/:id" element={<Details columns={[
+                    {size: '3', direction: 'row', content: ['fileDir']},
+                    {size: '6', direction: 'row', content: ['firstname', 'lastname', 'username', 'email']},
+                    {size: '3', direction: 'column', content: ['role', 'created']}
+                  ]} type={'Students'} collapse={{title: 'Courses Joined', fields: ['Course Title', 'Classroom Number']}} />} />
                   <Route path="/Teachers" element={<Teachers />} />
-                  <Route path="/Teachers/:id" element={<TeachersDetails />} />
+                  <Route path="/Teachers/:id" element={<Details columns={[
+                    {size: '3', direction: 'row', content: ['fileDir']},
+                    {size: '6', direction: 'row', content: ['firstname', 'lastname', 'username', 'email']},
+                    {size: '3', direction: 'column', content: ['role', 'created']},
+                  ]} type={'Teachers'} collapse={{title: 'Assinged Classes', fields: ['Course Title', 'Classroom Number']}} />} />
                   <Route path="/Admin" element={<Admin />} />
                   <Route path="/Admin/:option" element={<Create />} />
                   <Route path="/Notifications" element={<Notification />} />

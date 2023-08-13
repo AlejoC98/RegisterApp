@@ -443,3 +443,45 @@ export const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
   },
 }));
+
+export const capitalizeString = (str) => {
+  if (typeof str !== 'string') {
+      return ''; // Return an empty string for non-string inputs
+  }
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export const getUserCoursers = async (ele, data = []) => {
+  return new Promise((resolve, reject) => {
+
+    var json_params = ele.role === 2 ? {
+      collection: 'courses',
+      filter: { 'Teacher ID': ele.id }
+    } : ele.role === 3 ? {
+      collection: 'usercourses',
+      filter: { user_id: ele.id, status: 'Accepted' }
+    } : {
+      collection: 'usercourses',
+      filter: { course_id: ele.id, status: 'Accepted' }
+    }
+
+    axios.post('/getData', json_params).then((res) => {
+      if (res.data) {
+        if (ele.role === 2) {
+          resolve(res.data);
+        } else {
+          let response = [];
+          let dataVal = ele.role === 0 ? 'user_id' : 'course_id';
+          res.data.forEach((course) => {
+            response.push(data.find(c => c._id === course[dataVal]));
+          });
+
+          resolve(response);
+        }
+      }
+    }).catch((err) => {
+      console.log(err);
+      reject(err);
+    });
+  });
+}
