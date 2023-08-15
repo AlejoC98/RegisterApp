@@ -20,7 +20,7 @@ const Teachers = () => {
   }
 
   return (
-    <Box flexGrow={1}>
+    <Box flexGrow={1} className='animate__animated animate__zoomIn animate__faster'>
       <BasicTable
         title='Teachers' 
         actions={user.role === 1 ? [<DialogModal title='New Teacher' buttonText='New Teacher' buttonColor='secondary' content={<RegisterForm type={2} />} />] : undefined}

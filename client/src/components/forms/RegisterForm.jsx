@@ -20,7 +20,9 @@ const RegisterForm = ({ type }) => {
         firstname: '',
         lastname: '',
         username: '',
-        role: type,
+        ...(type !== undefined && {
+            role: type,
+        }),
         password: '',
         confirmPassword: '',
         dob: '',
@@ -34,7 +36,9 @@ const RegisterForm = ({ type }) => {
         firstname: yup.string().required('This field is required!'),
         lastname: yup.string().required('This field is required!'),
         username: yup.string().required('This field is required!'),
-        role: yup.number().required('This field is required!'),
+        ...(type !== undefined && {
+            role: yup.number().required('This field is required!'),
+        }),
         password: yup.string().min(6, 
             'Password must be at least 6 characters').required('Password required!'),
         confirmPassword: yup.string().oneOf([yup.ref('password'), null], 

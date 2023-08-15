@@ -11,6 +11,7 @@ const AppLayout = () => {
     const [theme, colorMode] = useMode();
     const [collapse, setCollapse] = useState(true);
 
+
     const handleCollapse = () => {
         setCollapse(!collapse);
     }
@@ -45,7 +46,7 @@ const AppLayout = () => {
                         theme={theme.palette.mode}
                     />
                     <LeftBar collapse={collapse} handleCollapse={handleCollapse} />
-                    <main className={`content ${collapse ? 'close' : 'open'}`}>
+                    <main className={`content ${collapse ? 'close' : 'open'}`} style={{ marginTop: 20}}>
                         <TopBar />
                         <Box className='container'>
                             <Outlet />

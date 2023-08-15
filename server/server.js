@@ -67,13 +67,16 @@ connectDB().then((db) => {
     io.on('connection', (socket) => {
 
         socket.on('newUser', (user) => {
-            userSocketMap.set(user._id, socket);
+            userSocketMap.set(user._id, {
+                socket: socket,
+                role: user.role
+            });
         });
 
         socket.on('disconnect', () => {
             // Remove the user-to-socket mapping on disconnect
-            for (const [userId, existingSocket] of userSocketMap.entries()) {
-                if (existingSocket === socket) {
+            for (const [userId, socketData] of userSocketMap.entries()) {
+                if (socketData.socket === socket) {
                     userSocketMap.delete(userId);
                     break;
                 }
@@ -85,11 +88,22 @@ connectDB().then((db) => {
     notiStream.on('change', (change) => {
         if (change.operationType === 'insert') {
             const notification = change.fullDocument;
-            const userId = notification.userId; // Assuming you have a userId in your notification
-            const socketForUser = userSocketMap.get(userId);
 
-            if (socketForUser) {
-                socketForUser.emit('getNotification', notification);
+            if (notification.user_id !== '') {
+                const userId = notification.user_id.toString();
+                const socketData = userSocketMap.get(userId);
+    
+                if (socketData) {
+                    socketData.socket.emit('getNotification', notification);
+                }
+            } else if (notification.role) {
+                // Send notification to users with the specified role
+                userSocketMap.forEach((socketData, userId) => {
+                    console.log(userId);
+                    if (socketData.role === notification.role) {
+                        socketData.socket.emit('getNotification', notification);
+                    }
+                });
             }
         }
     });
@@ -362,7 +376,9 @@ app.post('/updateData', upload.single('file'), async (req, res) => {
     let message = 'Record updated!';
     const file = req.file;
 
-    values = typeof values === 'string' && JSON.parse(values);
+    if (typeof values === 'string') {
+        values = JSON.parse(values);
+    }
 
     try {
         switch (collection) {

@@ -207,8 +207,8 @@ const UpdateDetails = ({ data, type, order, setEdit, setData }) => {
                                                     </BlockContent>
                                                 </Grid>
                                                 break;
-                                            case 'Course Description':
-                                                response = <Grid item md={12}>
+                                            case '':
+                                                response = <Grid item md={12} key={index}>
                                                     <BlockContent>
                                                         <FormControl fullWidth>
                                                             <InputLabel htmlFor="my-textarea">{column.label}</InputLabel>

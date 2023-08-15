@@ -13,12 +13,12 @@ const UserRequest = ({ data }) => {
 
     const { roles, updateList } = Global();
     const selectRoles = handleRolesSelectData(roles);
-    const [user, setUser] = useState(null);
+    const [requestedUser, setRequestedUser] = useState(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const initialValues = {
-        role: user ? parseInt(user.role) : 0
+        role: requestedUser && requestedUser.role !== null ? parseInt(requestedUser.role) : 3
     }
 
     const UserSchema = yup.object().shape({
@@ -26,35 +26,24 @@ const UserRequest = ({ data }) => {
     });
 
     const handleAccountStatus = (status) => {
-        user.status = status;
+        requestedUser.status = status;
     }
     
     const handleSubmit = (values) => {
         
         setLoading(true);
-        user.role = values.role;
+        requestedUser.role = values.role;
 
         axios.post('/updateData', {
             collection: 'users',
-            values: user
+            values: requestedUser
         }).then((res) => {
             if (res.data.status) {
                 toast.success(res.data.message);
-                data.status = 'Done';
-                axios.post('/updateData', {
-                    collection: 'notifications',
-                    values: data
-                }).then((res) => {
-                    if (res.data.status) {
-                        if (user.status === 'Approved') {
-                            updateList(user.role === 3 ? 'students': 'teachers', user);
-                        }
-                        setTimeout(() => {
-                            navigate('/Dashboard');
-                        }, 2000);
-                    }
-                }).catch((err) => toast.error(err));
-
+                updateList(requestedUser.role === 3 ? 'students': 'teachers', requestedUser);
+                setTimeout(() => {
+                    navigate('/Dashboard');
+                }, 2000);
             }
         }).catch((err) => toast.error(err));
     }
@@ -65,7 +54,7 @@ const UserRequest = ({ data }) => {
             filter: { _id: data.reference }
         }).then((res) => {
             if (res.data !== null) {
-                setUser(res.data[0]);
+                setRequestedUser(res.data[0]);
             }
         }).catch((err) => toast.error(err));
     }, [data]);
@@ -75,7 +64,7 @@ const UserRequest = ({ data }) => {
             <Box>
                 <Typography variant='h4'>User Informartion</Typography>
             </Box>
-            {user !== null && (
+            {requestedUser !== null && (
                 <Formik
                     onSubmit={handleSubmit}
                     initialValues={initialValues}
@@ -84,17 +73,16 @@ const UserRequest = ({ data }) => {
                     {({ values, errors, touched, handleChange, handleSubmit, setValues }) => (
                         <form onSubmit={handleSubmit}>
                             <Grid container spacing={2}>
-                                {Object.keys(user).map((label) => {
+                                {Object.keys(requestedUser).map((label, index) => {
                                     const dataElement = [];
                                     switch (label) {
                                         case '_id':
                                         case 'password':
                                             break;
                                         case 'role':
-                                            console.log(user[label]);
-                                            if (user[label] !== 0) {
+                                            if (requestedUser[label] !== 0 && requestedUser[label] !== null) {
                                                 dataElement.push(
-                                                    <Grid item md={12}>
+                                                    <Grid key={index} item md={12}>
                                                         <BlockContent>
                                                             <Typography 
                                                                 fontWeight='bold'
@@ -102,9 +90,9 @@ const UserRequest = ({ data }) => {
                                                                 {label}:
                                                             </Typography>
                                                             <Typography>
-                                                                { user[label] === '2' ?
+                                                                { requestedUser[label] === 2 ?
                                                                     'Teacher' 
-                                                                : user[label] === '3' ?
+                                                                : requestedUser[label] === 3 ?
                                                                     'Student' 
                                                                     : '' 
                                                                 }
@@ -115,7 +103,7 @@ const UserRequest = ({ data }) => {
                                             break;
                                         case 'fileDir':
                                             dataElement.push(
-                                                <Grid item md={12}>
+                                                <Grid key={index} item md={12}>
                                                     <BlockContent 
                                                         sx={{ 
                                                             display: 'flex',
@@ -128,18 +116,36 @@ const UserRequest = ({ data }) => {
                                                         </Typography>
                                                         <Avatar 
                                                             alt='user' 
-                                                            src={user[label]} 
+                                                            src={requestedUser[label]} 
                                                             sx={{ width: 76, height: 76 }} 
                                                         />
                                                     </BlockContent>
                                                 </Grid>);
                                             break;
+                                        case 'created':
+                                            var request = new Date(requestedUser[label]);
+                                            dataElement.push(
+                                                <Grid key={index} item md={12}>
+                                                    <BlockContent>
+                                                        <Typography fontWeight='bold'>Request Sent:</Typography>
+                                                        <Typography>
+                                                            { request.toLocaleDateString('en-US', { 
+                                                                year: 'numeric',
+                                                                month: 'long',
+                                                                day: 'numeric' 
+                                                                })
+                                                            }
+                                                        </Typography>
+                                                    </BlockContent>
+                                                </Grid>
+                                            );
+                                            break;
                                         default:
                                             dataElement.push(
-                                                <Grid item md={6}>
+                                                <Grid key={index} item md={6}>
                                                     <BlockContent>
                                                         <Typography fontWeight='bold'>{label}:</Typography>
-                                                        <Typography>{user[label]}</Typography>
+                                                        <Typography>{requestedUser[label]}</Typography>
                                                     </BlockContent>
                                                 </Grid>);
                                             break;
@@ -147,7 +153,7 @@ const UserRequest = ({ data }) => {
 
                                     return dataElement;
                                 })}
-                                { user.role === 0 && (
+                                { (requestedUser.role === 0 || requestedUser.role === null) && (
                                     <Grid item md={12}>
                                         <BlockContent>
                                             <DynamicSelect
@@ -180,7 +186,7 @@ const UserRequest = ({ data }) => {
                                             variant='contained'
                                             color='success'
                                             type='submit'
-                                            disabled={loading || user.status !== 'Pending'}
+                                            disabled={loading || requestedUser.status !== 'Pending'}
                                             onClick={() => handleAccountStatus('Approved') }>
                                                 Approve
                                             </Button>
@@ -188,7 +194,7 @@ const UserRequest = ({ data }) => {
                                             variant='contained'
                                             color='error'
                                             type='submit'
-                                            disabled={loading || user.status !== 'Pending'}
+                                            disabled={loading || requestedUser.status !== 'Pending'}
                                             onClick={() => handleAccountStatus('Denied') }>
                                                 Denied
                                             </Button>

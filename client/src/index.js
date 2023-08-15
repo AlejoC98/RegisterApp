@@ -14,12 +14,12 @@ axios.interceptors.request.use(config => {
 axios.interceptors.response.use(response => {
   setTimeout(() => {
     document.querySelector(".loading-container").style.display = "none";
-  }, 1000);  
+  }, 800);
     return response;
 }, (err) => {
   setTimeout(() => {
     document.querySelector(".loading-container").style.display = "none";
-  }, 1000);  
+  }, 800);
     return Promise.reject(err);
 });
 

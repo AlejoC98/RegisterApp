@@ -21,7 +21,7 @@ const Courses = () => {
   }
 
   return (
-    <Box flexGrow={1}>
+    <Box flexGrow={1} className='animate__animated animate__zoomIn animate__faster'>
       <BasicTable
         title='Courses'
         actions={ user.role === 1 ? [<DialogModal title='Import File' buttonText='Upload' buttonColor='secondary' content={<UploadFileForm />} />, <DialogModal title='Create Course' buttonText='New Course' buttonColor='success' content={<CoursesForm />} />] : undefined }

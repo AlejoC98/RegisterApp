@@ -110,12 +110,12 @@ const CourseDetails = () => {
     }
 
     return (
-        <Box flexGrow={1}>
+        <Box flexGrow={1} className={`animate__animated ${ !edit && 'animate__zoomIn'}  animate__faster`}>
             {data && (
                 <Grid container spacing={2}>
-                    <Grid item md={12}>
+                    <Grid item md={12} sm={12} xs={12}>
                         <BlockContent sx={{ display: 'flex', justifyContent: 'space-between', position: 'relative' }}>
-                            <IconButton onClick={() => edit ? setEdit(false) : handleBack()}>
+                            <IconButton onClick={handleBack}>
                                 <ArrowBackIosNewRoundedIcon />
                             </IconButton>
                             {user.role === 3 ? (
@@ -182,7 +182,7 @@ const CourseDetails = () => {
                     {edit ? (
                         <>
                             <Grid item md={12}>
-                                <Block>
+                                <Block className='animate__animated animate__zoomIn animate__faster'>
                                     <Typography variant='h4' fontWeight='bold'>Edit Student</Typography>
                                     <UpdateDetails
                                         data={data}
@@ -206,7 +206,7 @@ const CourseDetails = () => {
                                 </Block>
                             </Grid>
                             <Grid item md={12}>
-                                <Block>
+                                <Block className='animate__animated animate__zoomIn animate__faster'>
                                     <CollapseList
                                         title='Current Students'
                                         data={courseStudents}
@@ -239,7 +239,7 @@ const CourseDetails = () => {
                         </>
                     ) : (
                         <>
-                            <Grid item md={12}>
+                            <Grid item md={12} sm={12} xs={12}>
                                 <Block>
                                     <Grid container spacing={2}>
                                         <Grid item md={courseTeacher === undefined ? 4 : 3}>
@@ -266,7 +266,7 @@ const CourseDetails = () => {
                                     </Grid>
                                 </Block>
                             </Grid>
-                            <Grid item md={data['Course Description'].length > 400 ? 12 : 6}>
+                            <Grid item md={data['Course Description'].length > 400 ? 12 : 6} sm={5} xs={12}>
                                 <Block>
                                     <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Description:</Typography>
                                     <Typography>
@@ -274,22 +274,22 @@ const CourseDetails = () => {
                                     </Typography>
                                 </Block>
                             </Grid>
-                            <Grid item md={data['Course Description'].length > 400 ? 12 : 6}>
+                            <Grid item md={data['Course Description'].length > 400 ? 12 : 6} sm={7} xs={12}>
                                 <Block>
                                     <Grid container spacing={2}>
-                                        <Grid item md={3}>
+                                        <Grid item lg={3} md={6} sm={6} xs={6}>
                                             <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Capacity:</Typography>
                                             <Typography>{data['Capacity']}</Typography>
                                         </Grid>
-                                        <Grid item md={3}>
+                                        <Grid item lg={3} md={6} sm={6} xs={6}>
                                             <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Available Spaces:</Typography>
                                             <Typography>{data['Available']}</Typography>
                                         </Grid>
-                                        <Grid item md={3}>
+                                        <Grid item lg={3} md={6} sm={6} xs={6}>
                                             <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Credit Hours:</Typography>
                                             <Typography>{data['Credit Hours']}</Typography>
                                         </Grid>
-                                        <Grid item md={3}>
+                                        <Grid item lg={3} md={6} sm={6} xs={6}>
                                             <Typography fontWeight='bold' variant='h5' sx={{ mb: 1 }}>Tuition Cost:</Typography>
                                             <Typography>{data['Tuition Cost']}</Typography>
                                         </Grid>

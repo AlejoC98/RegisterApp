@@ -121,7 +121,7 @@ const Dashboard = () => {
     let insertLineData = [];
     setGrossIncome(0);
 
-    if (students.length > 0 && teachers.length > 0) {
+    if (students.length > 0 || teachers.length > 0) {
       var usersChartData = [...students,...teachers];
       usersChartData.forEach((user) => {
         var created_Date = new Date(user.created);
@@ -192,7 +192,7 @@ const Dashboard = () => {
       <InfoBlocks data={infoBlockData} />
       <Grid container spacing={2}>
         <Grid item lg={6} md={12} sm={12} xs={12}>
-          { user.role === 1 && (
+          { user.role === 1 && userLineChart.length > 0 && (
             <BlockContent className='dashboard-charts' sx={{backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : colors.richBlack[700]}}>
               <Typography variant='h5' fontWeight='bold'>Users that has joined</Typography>
               <LineChart data={userLineChart} />
@@ -200,7 +200,7 @@ const Dashboard = () => {
           )}
         </Grid>
         <Grid item lg={6} md={12} sm={12} xs={12}>
-          { user.role === 1 && (
+          { user.role === 1 && userPieChart.data.length > 0 && (
             <BlockContent className='dashboard-charts' sx={{backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : colors.richBlack[700]}}>
               <Typography variant='h5' fontWeight='bold'>Students in courses</Typography>
               <PieChart content={userPieChart} />

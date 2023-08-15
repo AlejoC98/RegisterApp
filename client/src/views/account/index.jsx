@@ -65,7 +65,7 @@ const Account = () => {
   }, [user, courses]);
 
   return (
-    <Box flexGrow={1}>
+    <Box flexGrow={1} className='animate__animated animate__zoomIn animate__faster'>
       <Box pl={2} mb={2}>
         <Typography variant='h5' fontWeight='bold'> Account Settings</Typography>
       </Box>

@@ -62,7 +62,7 @@ const StudentDetails = () => {
     }
 
     return (
-        <Box flexGrow={1}>
+        <Box flexGrow={1} className={`animate__animated ${ !edit && 'animate__zoomIn'}  animate__faster`}>
             <Grid container spacing={2}>
                 <Grid item md={12}>
                     <BlockContent sx={{ display: 'flex', justifyContent: 'space-between', position: 'relative' }}>
@@ -101,7 +101,7 @@ const StudentDetails = () => {
                 </Grid>
                 {edit ? (
                     <Grid item md={12}>
-                        <Block>
+                        <Block className='animate__animated animate__zoomIn animate__faster'>
                             <Typography variant='h4' fontWeight='bold'>Edit Student</Typography>
                             <UpdateDetails
                                 data={data}

@@ -101,16 +101,10 @@ const TopBar = () => {
       if (res.data.status) {
         switch (noti.type) {
           case 'course':
-            axios.post('/getData', {
-              collection: 'courses',
-              filter: { _id: noti.reference }
-            }).then((res) => {
-              console.log(notifications);
-              console.log(notifications.find(n => n._id === noti._id));
-              if (res.data) {
-                navigate(`${noti.to}/${noti.reference}`, { state: { data: res.data[0] } });
-              }
-            }).catch((err) => toast.warning(err));
+            const course = courses.find(c => c._id === noti.reference);
+            if (course !== undefined) {
+              navigate(`${noti.to}/${noti.reference}`, { state: { data: course } });
+            }
             break;
           default:
             navigate(`${noti.to}/${noti._id}`, { state: { data: noti } });
@@ -187,7 +181,7 @@ const TopBar = () => {
   );
 
   return (
-    <Box flexGrow={1}>
+    <Box flexGrow={1} backgroundColor={colors.ghostWhite[500]} position='fixed' zIndex={100} top={0} width='100%' pr={5}>
       <AppBar position='static' className='topbar'>
         <Toolbar>
           <Box className='date-section' sx={{ display: { xs: 'none', sm: 'flex' } }}>
