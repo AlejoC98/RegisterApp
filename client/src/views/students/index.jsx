@@ -18,7 +18,7 @@ const Students = () => {
     let mainPath = location.pathname.split('/')[1];
     navigate(`/${mainPath}/${data._id}`, { state: { data: data }});
   }
-
+  
   return (
     <Box flexGrow={1} className='animate__animated animate__zoomIn animate__faster'>
       <BasicTable

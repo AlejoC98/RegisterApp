@@ -33,7 +33,7 @@ const _dirname = path.dirname("");
 const buildPath = path.join(_dirname, "../client/build");
 
 // Initilize
-if (fs.existsSync(buildPath) && !development) {
+if (fs.existsSync(buildPath) && development === 'false') {
     app.use(express.static(buildPath));
 
     app.get('/*', (req, res) => {
@@ -146,6 +146,8 @@ app.post('/auth/register', upload.single('profile'), async (req, res) => {
     username = username.toLowerCase();
     let message = 'User created, please wait for aproval';
 
+    role = parseInt(role);
+
     try {
         const { buffer, mimetype } = req.file;
 
@@ -171,7 +173,7 @@ app.post('/auth/register', upload.single('profile'), async (req, res) => {
 
     try {
 
-        status = creator_role === 1 ? 'Approved' : status;
+        status = creator_role === '1' ? 'Approved' : status;
 
         const insertId = await User.create({
             firstname,
@@ -187,7 +189,7 @@ app.post('/auth/register', upload.single('profile'), async (req, res) => {
             role
         });
 
-        if (creator_role !== 1) {
+        if (creator_role !== '1') {
             await createRecord('notifications',
                 {
                     title: 'User request',
@@ -383,6 +385,7 @@ app.post('/updateData', upload.single('file'), async (req, res) => {
     try {
         switch (collection) {
             case 'users':
+                values.created = new Date(values.created);
                 response = await updateRecord(collection, values);
                 message = `User ${values.status}!`;
                 break;

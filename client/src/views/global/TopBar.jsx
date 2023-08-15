@@ -181,7 +181,7 @@ const TopBar = () => {
   );
 
   return (
-    <Box flexGrow={1} backgroundColor={colors.ghostWhite[500]} position='fixed' zIndex={100} top={0} width='100%' pr={5}>
+    <Box flexGrow={1} backgroundColor={theme.palette.mode === 'light' ? colors.ghostWhite[500] : colors.richBlack[500]} position='fixed' zIndex={100} top={0} width='100%' pr={5}>
       <AppBar position='static' className='topbar'>
         <Toolbar>
           <Box className='date-section' sx={{ display: { xs: 'none', sm: 'flex' } }}>

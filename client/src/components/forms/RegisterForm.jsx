@@ -11,10 +11,12 @@ import MaskTextField from '../../components/MaskTextField';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { UserAuth } from '../../context/UserContext';
+import { Global } from '../../context/GlobalContext';
 
 const RegisterForm = ({ type }) => {
 
     const { user } = UserAuth();
+    const { updateList } = Global();
 
     const initialValues = {
         firstname: '',
@@ -67,8 +69,12 @@ const RegisterForm = ({ type }) => {
 
         axios.post('/auth/register', formData).then((res) => {
             resetForm();
-            if (type === undefined) {
-                navigate('/Login');
+            if (user.role === 1) {
+                updateList(values.role === 3 ? 'students' : 'teachers', values);
+            } else {
+                if (type === undefined) {
+                    navigate('/Login');
+                }
             }
             setTimeout(() => {
                 toast.success(res.data.message);

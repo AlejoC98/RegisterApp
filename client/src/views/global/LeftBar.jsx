@@ -42,7 +42,7 @@ const LeftBar = ({ collapse, handleCollapse }) => {
               setUserToken(false);
               navigate('/Login');
               setTimeout(() => {
-                toast('Come back soon!');
+                toast.info('Come back soon!');
               }, 300);
             }
         }).catch((err) => toast.error(err.message));

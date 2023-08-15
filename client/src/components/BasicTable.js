@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography, useTheme } from '@mui/material';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
@@ -57,7 +57,7 @@ const BasicTable = ({ title, actions, headers, data, fields, color = 'transparen
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
-        setVisibleRows(data.slice(newPage * rowsPerPage, newPage * rowsPerPage + rowsPerPage))
+        setVisibleRows(data.slice(newPage * rowsPerPage, newPage * rowsPerPage + rowsPerPage));
     };
 
     const handleChangeRowsPerPage = (event) => {
@@ -77,7 +77,11 @@ const BasicTable = ({ title, actions, headers, data, fields, color = 'transparen
             return false;
         }));
         setVisibleRows(searchResponse.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage));
-    }   
+    }
+
+    useEffect(() => {
+        setVisibleRows(data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage))
+    }, [data, page, rowsPerPage]);
 
     return (
         <Box

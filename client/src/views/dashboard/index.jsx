@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Grid, Typography, useTheme } from '@mui/material';
 import { tokens } from '../../theme';
 import { Global } from '../../context/GlobalContext';
-import { BlockContent, calculateStudentTuitions, getNextHoliday } from '../../components/global';
+import { BlockContent, calculateStudentTuitions, getNextHoliday, monthsMap } from '../../components/global';
 import Diversity3RoundedIcon from '@mui/icons-material/Diversity3Rounded';
 import Groups2RoundedIcon from '@mui/icons-material/Groups2Rounded';
 import ListAltRoundedIcon from '@mui/icons-material/ListAltRounded';
@@ -134,6 +134,13 @@ const Dashboard = () => {
         }
       });
 
+      insertLineData.sort((a, b) => {
+        const monthA = monthsMap[a.x];
+        const monthB = monthsMap[b.x];
+        
+        return monthA - monthB;
+      });
+
       setUserLineChart([
         {
           id: 'users',
@@ -191,7 +198,7 @@ const Dashboard = () => {
     <Box flexGrow={1}>
       <InfoBlocks data={infoBlockData} />
       <Grid container spacing={2}>
-        <Grid item lg={6} md={12} sm={12} xs={12}>
+        <Grid item lg={userPieChart.data.length > 0 ? 6 : 12} md={12} sm={12} xs={12}>
           { user.role === 1 && userLineChart.length > 0 && (
             <BlockContent className='dashboard-charts' sx={{backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : colors.richBlack[700]}}>
               <Typography variant='h5' fontWeight='bold'>Users that has joined</Typography>
@@ -199,7 +206,7 @@ const Dashboard = () => {
             </BlockContent>
           )}
         </Grid>
-        <Grid item lg={6} md={12} sm={12} xs={12}>
+        <Grid item lg={userLineChart.length > 0 ? 6 : 12} md={12} sm={12} xs={12}>
           { user.role === 1 && userPieChart.data.length > 0 && (
             <BlockContent className='dashboard-charts' sx={{backgroundColor: theme.palette.mode === 'light' ? '#ffffff' : colors.richBlack[700]}}>
               <Typography variant='h5' fontWeight='bold'>Students in courses</Typography>

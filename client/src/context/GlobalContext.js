@@ -22,22 +22,22 @@ export const GlobalProvider = ({ children }) => {
             collection: 'roles',
             filter: {}
         },
-        {
+        ...(user && [{
             collection: 'menus',
             filter: { role: user.role}
-        },
+        }]),
         {
             collection: 'courses',
             filter: {}
         },
-        {
+        ...(user && [{
             collection: 'notifications',
             filter: user.role === 1 ? { role: user.role} : { $or:   [
                 { role: user.role},
                 { user_id: user._id}
               ]
             }
-        },
+        }]),
         {
             collection: 'users',
             filter: { role: 2 }
