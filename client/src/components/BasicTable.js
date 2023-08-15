@@ -127,8 +127,10 @@ const BasicTable = ({ title, actions, headers, data, fields, color = 'transparen
                     <Paper>
                         <TableContainer component={Paper}
                             sx={{
-                                '&.MuiTableContainer-root':
-                                    { backgroundColor: color, overflowY: 'scroll', maxHeight: 500 }
+                                '&.MuiTableContainer-root': { 
+                                    backgroundColor: color, overflowY: 'scroll', maxHeight: 500 
+                                },
+                                minHeight: 500,
                             }}
                         >
                             <Table sx={{ minWidth: 650 }} aria-label='Basic Table'>

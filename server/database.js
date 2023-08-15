@@ -67,7 +67,7 @@ const createManyRecords = async (collection, data) => {
 const findRecord = async (collection, filter = {}) => {
     const collectiondb = getCollection(collection);
 
-    if (Object.keys(filter).includes('_id')) {
+    if (Object.keys(filter).includes('_id') && typeof filter._id === 'string') {
         filter._id = new ObjectId(filter._id);
     }
 
@@ -84,7 +84,8 @@ const updateRecord = async (collection, data) => {
 }
 
 const deleteRecord = async (collection, filter) => {
-    const collectiondb = getCollection(collection);
+    const collectiondb = await getCollection(collection);
+    filter._id = new ObjectId(filter._id)
     const removedRecord = await collectiondb.deleteOne(filter);
     return removedRecord.deletedCount;
 }

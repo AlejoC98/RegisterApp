@@ -44,9 +44,7 @@ const AssingTeacherForm = ({ course }) => {
             validationSchema={teacherSchema}
         >
             {({ values, errors, touched, handleChange, handleSubmit, setValues }) => (
-                <form
-                    onSubmit={handleSubmit}
-                >
+                <form onSubmit={handleSubmit} >
                     <Grid container spacing={2}>
                         <Grid item md={12}>
                             <BlockContent>

@@ -74,7 +74,12 @@ const UpdateAddressForm = ({ setSelected }) => {
                     error={!!touched.country && !!errors.country}
                     helperText={touched.country && errors.country}
                     onChange={handleChange}
-                    options={countries.map((item) => item.country)}
+                    options={
+                      countries.reduce((accumulator, currentObject) => {
+                        accumulator.push({text: currentObject.country, value: currentObject.country});
+                        return accumulator;
+                      }, [])
+                    }
                   />
                 </BlockContent>
               </Grid>
@@ -90,7 +95,12 @@ const UpdateAddressForm = ({ setSelected }) => {
                     error={!!touched.state && !!errors.state}
                     helperText={touched.state && errors.state}
                     onChange={handleChange}
-                    options={usStates.map((item) => item.name)}
+                    options={
+                      usStates.reduce((accumulator, currentObject) => {
+                        accumulator.push({text: currentObject.name, value: currentObject.name});
+                        return accumulator;
+                      }, [])
+                    }
                   />
                 </BlockContent>
               </Grid>

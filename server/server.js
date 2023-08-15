@@ -288,7 +288,7 @@ app.post('/createData', upload.single('file'), async (req, res) => {
                 }
                 break;
             case 'usercourses':
-                values['status'] = 'Pending';
+                values['status'] = 'status' in values ? values.status : 'Pending';
 
                 if (response = await createRecord(collection, values, validation)) {
                     let requestedUser;
@@ -297,22 +297,49 @@ app.post('/createData', upload.single('file'), async (req, res) => {
 
                         requestedUser = requestedUser[0];
 
-                        await createRecord('notifications', 
-                            { 
-                                title: 'Joining Course', 
-                                subtitle: `${requestedUser.firstname} ${requestedUser.lastname} has request to join this course.`, 
-                                to: '/Notifications', 
-                                icon: 'ListAlt', 
-                                role: 1, 
-                                open: false, 
-                                reference: response, 
-                                type: 'usercourses', 
-                                user_id: '' 
-                            }, 
-                            validation
-                        );
+                        if (values.status === 'Accepted') {
 
-                        message = 'Your request has been sent, you have to wait for approval!';
+                            let course = await findRecord('courses', {_id: values.course_id});
+                            course = course[0];
+
+                            course['Available'] -= 1
+
+                            await updateRecord('courses', course);
+
+                            await createRecord('notifications', 
+                                { 
+                                    title: 'Added To Course', 
+                                    subtitle: 'You have been added to a new course!', 
+                                    to: '/Courses',
+                                    icon: 'ListAlt', 
+                                    role: 0,
+                                    open: false, 
+                                    reference: values.course_id, 
+                                    type: 'usercourses',
+                                    user_id: requestedUser._id
+                                }, 
+                                validation
+                            );
+    
+                            message = `You have added ${requestedUser.firstname} ${requestedUser.lastname} to this course!`;
+                        } else {
+                            await createRecord('notifications', 
+                                { 
+                                    title: 'Joining Course', 
+                                    subtitle: `${requestedUser.firstname} ${requestedUser.lastname} has request to join this course.`, 
+                                    to: '/Notifications', 
+                                    icon: 'ListAlt', 
+                                    role: 1, 
+                                    open: false, 
+                                    reference: response, 
+                                    type: 'usercourses', 
+                                    user_id: '' 
+                                }, 
+                                validation
+                            );
+    
+                            message = 'Your request has been sent, you have to wait for approval!';
+                        }
                     }
                 }
                 break;
@@ -325,7 +352,7 @@ app.post('/createData', upload.single('file'), async (req, res) => {
     }
 
     if (response !== undefined) {
-        res.send({ message: message, status: true });
+        res.send({ message: message, status: true, recordId: response});
     }
 });
 
@@ -334,6 +361,8 @@ app.post('/updateData', upload.single('file'), async (req, res) => {
     let response = undefined;
     let message = 'Record updated!';
     const file = req.file;
+
+    values = typeof values === 'string' && JSON.parse(values);
 
     try {
         switch (collection) {
@@ -432,9 +461,44 @@ app.post('/deleteData', async (req, res) => {
     try {
         switch (collection) {
             case 'courses':
-                response = await deleteRecord(collection, filter);
+            case 'students':
+            case 'teachers':
+
+                response = await deleteRecord(collection !== 'courses' ? 'users' : 'courses', filter);
+
                 if (response) {
-                    console.log(filter._id);
+
+                    filter._id = filter._id.toString();
+
+                    const relation_filter = collection === 'courses' ? {course_id: filter._id} : collection === 'students' ? {user_id: filter._id} : {'Teacher ID' : filter._id};
+    
+                    const relations = await findRecord(collection === 'teachers' ? 'courses' : 'usercourses', relation_filter);
+    
+                    if (relations.length > 0) {
+                        relations.forEach( async (record) => {
+                            if (collection === 'teachers') {
+                                record['Teacher ID'] = '';
+                                await updateRecord('usercourses', record);
+                            } else {
+                                await deleteRecord('usercourses', { _id: record._id});
+                                console.log(record);
+                                // await updateRecord('usercourses', record);
+                            }
+                        });
+                    }
+                }
+                break;
+            case 'usercourses':
+                let currentData = await findRecord('usercourses', filter);
+                currentData = currentData[0];
+                if (currentData) {
+                    let currentCourse = await findRecord('courses', {_id: currentData.course_id});
+                    currentCourse = currentCourse[0];
+                    response = await deleteRecord(collection, filter);
+                    if (response) {
+                        currentCourse['Available'] += 1;
+                        await updateRecord('courses', currentCourse);
+                    }
                 }
                 break;
             default:

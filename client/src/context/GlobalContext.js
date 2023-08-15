@@ -54,7 +54,6 @@ export const GlobalProvider = ({ children }) => {
 
     // Update List Function
     const updateList = useCallback((list, newItem) => {
-        console.log(newItem);
         switch (list) {
             case 'roles':
                 setRoles((prev) => [...prev, newItem]);
@@ -147,7 +146,7 @@ export const GlobalProvider = ({ children }) => {
         }
     }, [user, getData, updateList]);
 
-    return <GlobalContext.Provider value={{ roles, menus, notifications, courses, userCourses, teachers, students, updateList, getData }}>{children}</GlobalContext.Provider>;    
+    return <GlobalContext.Provider value={{ roles, menus, notifications, courses, setCourses, userCourses, teachers, students, updateList, getData }}>{children}</GlobalContext.Provider>;    
 
 }
 

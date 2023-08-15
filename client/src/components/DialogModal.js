@@ -1,9 +1,10 @@
-import { Box, Button, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Typography } from '@mui/material';
+import { Box, Button, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab, IconButton, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import { getIconComponent } from './global';
 
-const DialogModal = ({title, buttonColor = 'primary', buttonText, actionButtons = {}, content}) => {
+const DialogModal = ({title, buttonColor = 'primary', buttonType = 1, buttonIcon = '', buttonText, actionButtons = {}, content}) => {
 
     const [open, setOpen] = useState(false);
 
@@ -17,9 +18,19 @@ const DialogModal = ({title, buttonColor = 'primary', buttonText, actionButtons 
 
     return (
         <Box flexGrow={1}>
-            <Button variant='contained' color={buttonColor} onClick={handleOpen}>
-                {buttonText}
-            </Button>
+            { buttonType === 1 ? (
+                <Button variant='contained' color={buttonColor} onClick={handleOpen}>
+                    {buttonText}
+                </Button>
+            ) : buttonType === 2 ? (
+                <IconButton onClick={handleOpen}>
+                    { getIconComponent(buttonIcon, buttonColor) }
+                </IconButton>
+            ) : buttonType === 3 && (
+                <Fab size='small' color={buttonColor} aria-label='add' onClick={handleOpen}>
+                    { getIconComponent(buttonIcon) }
+                </Fab>
+            )}
             <Dialog
                 open={open}
                 onClose={handleClose}

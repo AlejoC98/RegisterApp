@@ -1,6 +1,6 @@
-import { Avatar, Box, Button, Grid, IconButton, TextField } from '@mui/material';
+import { Avatar, Box, Button, FormControl, Grid, IconButton, InputLabel, TextField } from '@mui/material';
 import React, { useRef, useState } from 'react'
-import { BlockContent, handleRolesSelectData } from '../global';
+import { BlockContent, StyledTextarea, handleRolesSelectData } from '../global';
 import * as yup from 'yup';
 import { Formik } from 'formik';
 import { toast } from 'react-toastify';
@@ -12,13 +12,13 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import 'animate.css';
 import axios from 'axios';
+import AutoComplete from '../AutoComplete';
+import SaveRoundedIcon from '@mui/icons-material/SaveRounded';
 
-const UpdateDetails = ({ id, type, order }) => {
+const UpdateDetails = ({ data, type, order, setEdit, setData }) => {
 
-    const { roles, students, teachers, courses } = Global();
-    const generalData = [...students, ...teachers, ...courses];
+    const { roles, teachers } = Global();
     const fileInputRef = useRef();
-    let data = generalData.find(c => c._id === id);
     const [profile, setProfile] = useState(data.fileDir);
     const selectRoles = handleRolesSelectData(roles);
     const initialValues = order.reduce((acc, column) => ({ ...acc, [column.field]: data[column.field] === undefined ? '' : data[column.field] }), {});
@@ -27,7 +27,7 @@ const UpdateDetails = ({ id, type, order }) => {
         order.reduce((schemaFields, column) => ({
             ...schemaFields,
             [column.field]: column.field === 'password' ? yup.string().min(6, 
-                'Password must be at least 6 characters') : yup.string()
+                'Password must be at least 6 characters') : column.field === 'Capacity' || column.field === 'Available' ? yup.number() : yup.string()
         }), {})
     );
 
@@ -35,7 +35,7 @@ const UpdateDetails = ({ id, type, order }) => {
         
         const formData = new FormData();
         const insertData = {_id: data._id}
-        formData.append('collection', 'profile');
+        formData.append('collection', 'courses');
 
         Object.keys(values).forEach(key => {
             if (values[key] !== '') {
@@ -57,12 +57,14 @@ const UpdateDetails = ({ id, type, order }) => {
 
         axios.post('/updateData', formData).then((res) => {
             if (res.data.status) {
-              toast.success(res.data.message);
-              data = {...data, ...values};
+                var newData = {...data, ...values};
+                toast.success(res.data.message);
+                setData(newData);
+                setEdit(false);
             }
-          }).catch((err) => {
+        }).catch((err) => {
             toast.warning(err.response.data.message);
-          });
+        });
     }
 
     const handleOpenFile = () => {
@@ -93,6 +95,30 @@ const UpdateDetails = ({ id, type, order }) => {
                                     {order.map((column, index) => {
                                         let response;
                                         switch (column.field) {
+                                            case 'Teacher ID':
+                                                response = <Grid key={index} item md={12}>
+                                                    <BlockContent>
+                                                        <AutoComplete
+                                                            fullWidth
+                                                            id='teacher'
+                                                            name='Teacher ID'
+                                                            label='Teacher'
+                                                            value={values.student}
+                                                            setValues={setValues}
+                                                            error={!!touched.student && !!errors.student}
+                                                            helperText={touched.student && errors.student}
+                                                            onChange={handleChange}
+                                                            options={
+                                                                teachers.reduce((accumulator, currentObject) => {
+                                                                    accumulator.push({text: `${currentObject.firstname} ${currentObject.lastname}`, value: currentObject._id});
+
+                                                                    return accumulator;
+                                                                }, [])
+                                                            }
+                                                        />
+                                                    </BlockContent>
+                                                </Grid>;
+                                                break;
                                             case 'fileDir':
                                                 response = <Grid key={index} item md={column.size}>
                                                     <BlockContent>
@@ -181,6 +207,39 @@ const UpdateDetails = ({ id, type, order }) => {
                                                     </BlockContent>
                                                 </Grid>
                                                 break;
+                                            case 'Course Description':
+                                                response = <Grid item md={12}>
+                                                    <BlockContent>
+                                                        <FormControl fullWidth>
+                                                            <InputLabel htmlFor="my-textarea">{column.label}</InputLabel>
+                                                            <StyledTextarea
+                                                                aria-label="minimum height"
+                                                                minRows={3}
+                                                            />
+                                                        </FormControl>
+                                                    </BlockContent>
+                                                </Grid>;
+                                                break;
+                                            case 'Capacity':
+                                            case 'Available':
+                                                response = <Grid key={index} item md={column.size}>
+                                                    <BlockContent>
+                                                        <TextField
+                                                            fullWidth
+                                                            variant='outlined'
+                                                            type='number'
+                                                            label={column.label}
+                                                            value={values[column.field]}
+                                                            name={column.field}
+                                                            onBlur={handleBlur}
+                                                            onChange={handleChange}
+                                                            error={!!touched[column.field] && !!errors[column.field]}
+                                                            helperText={touched[column.field] && errors[column.field]}
+                                                            inputProps={{ style: { textTransform: "capitalize" } }}
+                                                        />
+                                                    </BlockContent>
+                                                </Grid>;
+                                                break;
                                             default:
                                                 response = <Grid key={index} item md={column.size}>
                                                     <BlockContent>
@@ -205,7 +264,7 @@ const UpdateDetails = ({ id, type, order }) => {
                                     })}
                                     <Grid item md={12}>
                                         <BlockContent>
-                                            <Button type='submit' variant='contained' color='secondary'>Update</Button>
+                                            <Button startIcon={<SaveRoundedIcon />} type='submit' variant='contained' color='secondary'>Update</Button>
                                         </BlockContent>
                                     </Grid>
                                 </Grid>
