@@ -1,8 +1,5 @@
 {
   "dependencies": {
     "@nivo/pie": "^0.83.0"
-  },
-  "devDependencies": {
-    "gh-pages": "^6.0.0"
   }
 }
