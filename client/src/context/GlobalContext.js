@@ -17,40 +17,44 @@ export const GlobalProvider = ({ children }) => {
     const [students, setStudents] = useState([]);
     const [teachers, setTeachers] = useState([]);
     const [notifications, setNotifications] = useState([]);
-    const requireData = useMemo(() => [
-        {
-            collection: 'roles',
-            filter: {}
-        },
-        ...(user && [{
-            collection: 'menus',
-            filter: { role: user.role}
-        }]),
-        {
-            collection: 'courses',
-            filter: {}
-        },
-        ...(user && [{
-            collection: 'notifications',
-            filter: user.role === 1 ? { role: user.role} : { $or:   [
-                { role: user.role},
-                { user_id: user._id}
-              ]
-            }
-        }]),
-        {
-            collection: 'users',
-            filter: { role: 2 }
-        },
-        {
-            collection: 'users',
-            filter: { role: 3 }
-        },
-        {
-            collection: 'usercourses',
-            filter: user.role === 1 ? {} : { user_id: user._id}
+    const requireData = useMemo(() => {
+        if (user !== undefined && Object.keys(user).length > 0) {
+            return [
+                {
+                    collection: 'roles',
+                    filter: {}
+                },
+                ...(user && [{
+                    collection: 'menus',
+                    filter: { role: user.role}
+                }]),
+                {
+                    collection: 'courses',
+                    filter: {}
+                },
+                ...(user && [{
+                    collection: 'notifications',
+                    filter: user.role === 1 ? { role: user.role} : { $or: [
+                        { role: user.role},
+                        { user_id: user._id}
+                      ]
+                    }
+                }]),
+                {
+                    collection: 'users',
+                    filter: { role: 2 }
+                },
+                {
+                    collection: 'users',
+                    filter: { role: 3 }
+                },
+                ...(user && [{
+                    collection: 'usercourses',
+                    filter: user.role === 1 ? {} : { user_id: user._id}
+                }])
+            ]
         }
-    ], [user]);
+    }, [user]);
 
     // Update List Function
     const updateList = useCallback((list, newItem) => {
