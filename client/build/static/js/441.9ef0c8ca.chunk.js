@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkclient=self.webpackChunkclient||[]).push([[441],{8441:function(e,n,c){c.r(n);c(2791);var r=c(184);n.default=function(){return(0,r.jsx)("div",{children:"TeachersForm"})}}}]);
+//# sourceMappingURL=441.9ef0c8ca.chunk.js.map

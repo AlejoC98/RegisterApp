@@ -1,0 +1,1 @@
+{"version":3,"file":"static/js/996.f4ef5d01.chunk.js","mappings":"iIAQA,UANiB,WACf,OACEA,EAAAA,EAAAA,KAAA,OAAAC,SAAK,YAET,C","sources":["components/forms/NullForm.jsx"],"sourcesContent":["import React from 'react'\n\nconst NullForm = () => {\n  return (\n    <div>NullForm</div>\n  )\n}\n\nexport default NullForm"],"names":["_jsx","children"],"sourceRoot":""}

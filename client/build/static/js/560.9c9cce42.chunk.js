@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkclient=self.webpackChunkclient||[]).push([[560],{2560:function(e,n,t){t.r(n);t(2791);var u=t(184);n.default=function(){return(0,u.jsx)("div",{children:"StudentsForm"})}}}]);
+//# sourceMappingURL=560.9c9cce42.chunk.js.map

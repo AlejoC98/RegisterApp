@@ -1,0 +1,1 @@
+{"version":3,"file":"static/js/546.52c20452.chunk.js","mappings":"iIAQA,UANiB,WACf,OACEA,EAAAA,EAAAA,KAAA,OAAAC,SAAK,YAET,C","sources":["components/forms/UserForm.jsx"],"sourcesContent":["import React from 'react'\n\nconst UserForm = () => {\n  return (\n    <div>UserForm</div>\n  )\n}\n\nexport default UserForm"],"names":["_jsx","children"],"sourceRoot":""}

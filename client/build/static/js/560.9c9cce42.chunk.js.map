@@ -1,0 +1,1 @@
+{"version":3,"file":"static/js/560.9c9cce42.chunk.js","mappings":"iIAQA,UANqB,WACnB,OACEA,EAAAA,EAAAA,KAAA,OAAAC,SAAK,gBAET,C","sources":["components/forms/StudentsForm.jsx"],"sourcesContent":["import React from 'react'\n\nconst StudentsForm = () => {\n  return (\n    <div>StudentsForm</div>\n  )\n}\n\nexport default StudentsForm"],"names":["_jsx","children"],"sourceRoot":""}
