@@ -16,12 +16,14 @@ const AutoComplete = ({
   const [selectValue, setSelectValue] = useState(value);
 
   const handleAutocompleteChange = (event, selectedOption) => {
-    setSelectValue(event.currentTarget.textContent);
+    setSelectValue(selectedOption.text);
     setValues((prevValues) => ({
       ...prevValues,
-      [name]: selectedOption,
+      [name]: selectedOption.value,
     }));
   };
+
+  const getOptionLabel = (option) => option.text;
 
   return (
     <Autocomplete
@@ -29,9 +31,10 @@ const AutoComplete = ({
       disablePortal
       id={id}
       options={options}
+      getOptionLabel={getOptionLabel}
       renderOption={(props, option) => (
         <Box {...props} display="flex" width="100%" justifyContent="space-around">
-          <Typography>{option}</Typography>
+          <Typography>{option.text}</Typography>
         </Box>
       )}
       renderInput={(params) => (

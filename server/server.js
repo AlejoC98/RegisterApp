@@ -33,7 +33,7 @@ const _dirname = path.dirname("");
 const buildPath = path.join(_dirname, "../client/build");
 
 // Initilize
-if (fs.existsSync(buildPath) && !development) {
+if (fs.existsSync(buildPath) && development === 'false') {
     app.use(express.static(buildPath));
 
     app.get('/*', (req, res) => {
@@ -57,47 +57,59 @@ const s3 = new S3Client({
 // Functions
 const randomImageName = (bytes = 32) => crypto.randomBytes(bytes).toString('hex');
 
-let onlineUsers = [];
-
-const addNewUser = (username, socketId) => {
-    !onlineUsers.some(user => user.username === username) && onlineUsers.push({ username, socketId});
-}
-
-const removeUser = (socketId) => {
-    onlineUsers = onlineUsers.filter(user => user.socketId !== socketId);
-}
-
-const getUser = (id) => {
-    return onlineUsers.find(u => u._id === id);
-}
-
-const sentNotificationsCache = new Set();
-
 // Initializing db and setting watch
 connectDB().then((db) => {
     const notificationColl = db.collection('notifications');
-    const notiStream = notificationColl.watch({ operationType: 'insert' });
+    const notiStream = notificationColl.watch();
+
+    const userSocketMap = new Map(); // Map to store user-to-socket associations
 
     io.on('connection', (socket) => {
 
         socket.on('newUser', (user) => {
-            addNewUser(user._id, socket.id);
-            // socket.join(user.role.toString());
+            userSocketMap.set(user._id, {
+                socket: socket,
+                role: user.role
+            });
         });
 
         socket.on('disconnect', () => {
-            removeUser(socket.id);
-        });
-
-        notiStream.on('change', (change) => {
-            if (change.operationType === 'insert') {
-                var notification = change.fullDocument;
-                socket.emit('getNotification', notification)
+            // Remove the user-to-socket mapping on disconnect
+            for (const [userId, socketData] of userSocketMap.entries()) {
+                if (socketData.socket === socket) {
+                    userSocketMap.delete(userId);
+                    break;
+                }
             }
         });
 
     });
+
+    notiStream.on('change', (change) => {
+        if (change.operationType === 'insert') {
+            const notification = change.fullDocument;
+
+            if (notification.user_id !== '') {
+                const userId = notification.user_id.toString();
+                const socketData = userSocketMap.get(userId);
+    
+                if (socketData) {
+                    socketData.socket.emit('getNotification', notification);
+                }
+            } else if (notification.role) {
+                // Send notification to users with the specified role
+                userSocketMap.forEach((socketData, userId) => {
+                    console.log(userId);
+                    if (socketData.role === notification.role) {
+                        socketData.socket.emit('getNotification', notification);
+                    }
+                });
+            }
+        }
+    });
+
 });
+
 
 // Routes / Views
 app.post('/auth/login', async (req, res) => {
@@ -134,6 +146,8 @@ app.post('/auth/register', upload.single('profile'), async (req, res) => {
     username = username.toLowerCase();
     let message = 'User created, please wait for aproval';
 
+    role = parseInt(role);
+
     try {
         const { buffer, mimetype } = req.file;
 
@@ -159,7 +173,7 @@ app.post('/auth/register', upload.single('profile'), async (req, res) => {
 
     try {
 
-        status = creator_role === 1 ? 'Approved' : status;
+        status = creator_role === '1' ? 'Approved' : status;
 
         const insertId = await User.create({
             firstname,
@@ -175,7 +189,7 @@ app.post('/auth/register', upload.single('profile'), async (req, res) => {
             role
         });
 
-        if (creator_role !== 1) {
+        if (creator_role !== '1') {
             await createRecord('notifications',
                 {
                     title: 'User request',
@@ -184,7 +198,6 @@ app.post('/auth/register', upload.single('profile'), async (req, res) => {
                     icon: 'PersonRounded',
                     role: 1,
                     open: false,
-                    status: 'Pending',
                     reference: insertId,
                     type: 'users',
                     user_id: ''
@@ -272,14 +285,26 @@ app.post('/createData', upload.single('file'), async (req, res) => {
                     response = await createRecord(collection, values, validation);
 
                     if (response) {
-                        await createRecord('notifications', { title: 'New Course', subtitle: 'There\'s a new course available', to: '/Courses', icon: 'ListAlt', role: 3, open: false, status: 'Pending', reference: response, type: 'course', user_id: '' });
+                        await createRecord('notifications', 
+                            { 
+                                title: 'New Course', 
+                                subtitle: 'There\'s a new course available', 
+                                to: '/Courses', 
+                                icon: 'ListAlt', 
+                                role: 3, 
+                                open: false, 
+                                reference: response, 
+                                type: 'course', 
+                                user_id: '' 
+                            }
+                        );
 
                         message = 'Course created!';
                     }
                 }
                 break;
             case 'usercourses':
-                values['status'] = 'Pending';
+                values['status'] = 'status' in values ? values.status : 'Pending';
 
                 if (response = await createRecord(collection, values, validation)) {
                     let requestedUser;
@@ -288,9 +313,49 @@ app.post('/createData', upload.single('file'), async (req, res) => {
 
                         requestedUser = requestedUser[0];
 
-                        await createRecord('notifications', { title: 'Joining Course', subtitle: `${requestedUser.firstname} ${requestedUser.lastname} has request to join this course.`, to: '/Notifications', icon: 'ListAlt', role: 1, open: false, status: 'Pending', reference: response, type: 'usercourses', user_id: '' }, validation);
+                        if (values.status === 'Accepted') {
 
-                        message = 'Your request has been sent, you have to wait for approval!';
+                            let course = await findRecord('courses', {_id: values.course_id});
+                            course = course[0];
+
+                            course['Available'] -= 1
+
+                            await updateRecord('courses', course);
+
+                            await createRecord('notifications', 
+                                { 
+                                    title: 'Added To Course', 
+                                    subtitle: 'You have been added to a new course!', 
+                                    to: '/Courses',
+                                    icon: 'ListAlt', 
+                                    role: 0,
+                                    open: false, 
+                                    reference: values.course_id, 
+                                    type: 'usercourses',
+                                    user_id: requestedUser._id
+                                }, 
+                                validation
+                            );
+    
+                            message = `You have added ${requestedUser.firstname} ${requestedUser.lastname} to this course!`;
+                        } else {
+                            await createRecord('notifications', 
+                                { 
+                                    title: 'Joining Course', 
+                                    subtitle: `${requestedUser.firstname} ${requestedUser.lastname} has request to join this course.`, 
+                                    to: '/Notifications', 
+                                    icon: 'ListAlt', 
+                                    role: 1, 
+                                    open: false, 
+                                    reference: response, 
+                                    type: 'usercourses', 
+                                    user_id: '' 
+                                }, 
+                                validation
+                            );
+    
+                            message = 'Your request has been sent, you have to wait for approval!';
+                        }
                     }
                 }
                 break;
@@ -303,7 +368,7 @@ app.post('/createData', upload.single('file'), async (req, res) => {
     }
 
     if (response !== undefined) {
-        res.send({ message: message, status: true });
+        res.send({ message: message, status: true, recordId: response});
     }
 });
 
@@ -313,9 +378,14 @@ app.post('/updateData', upload.single('file'), async (req, res) => {
     let message = 'Record updated!';
     const file = req.file;
 
+    if (typeof values === 'string') {
+        values = JSON.parse(values);
+    }
+
     try {
         switch (collection) {
             case 'users':
+                values.created = new Date(values.created);
                 response = await updateRecord(collection, values);
                 message = `User ${values.status}!`;
                 break;
@@ -326,7 +396,19 @@ app.post('/updateData', upload.single('file'), async (req, res) => {
                 if (response) {
                     await updateRecord('courses', { _id: values.course_id, 'Available': newAvailableSpace });
 
-                    await createRecord('notifications', { title: `Request ${values.status}`, subtitle: 'Check course', to: '/Courses', icon: values.status === 'Accepted' ? 'DoneOutlineRounded' : 'CancelRounded', role: 3, open: false, status: 'Pending', reference: values.course_id, type: 'course', user_id: values.user_id });
+                    await createRecord('notifications', 
+                        { 
+                            title: `Request ${values.status}`, 
+                            subtitle: 'Check course', 
+                            to: '/Courses', 
+                            icon: values.status === 'Accepted' ? 'DoneOutlineRounded' : 'CancelRounded', 
+                            role: 3, 
+                            open: false, 
+                            reference: values.course_id, 
+                            type: 'course', 
+                            user_id: values.user_id 
+                        }
+                    );
                 }
                 message = `Student ${values.status}`;
                 break;
@@ -396,7 +478,52 @@ app.post('/deleteData', async (req, res) => {
     let message = 'Record deleted!';
 
     try {
-        response = await deleteRecord(collection, filter);
+        switch (collection) {
+            case 'courses':
+            case 'students':
+            case 'teachers':
+
+                response = await deleteRecord(collection !== 'courses' ? 'users' : 'courses', filter);
+
+                if (response) {
+
+                    filter._id = filter._id.toString();
+
+                    const relation_filter = collection === 'courses' ? {course_id: filter._id} : collection === 'students' ? {user_id: filter._id} : {'Teacher ID' : filter._id};
+    
+                    const relations = await findRecord(collection === 'teachers' ? 'courses' : 'usercourses', relation_filter);
+    
+                    if (relations.length > 0) {
+                        relations.forEach( async (record) => {
+                            if (collection === 'teachers') {
+                                record['Teacher ID'] = '';
+                                await updateRecord('usercourses', record);
+                            } else {
+                                await deleteRecord('usercourses', { _id: record._id});
+                                console.log(record);
+                                // await updateRecord('usercourses', record);
+                            }
+                        });
+                    }
+                }
+                break;
+            case 'usercourses':
+                let currentData = await findRecord('usercourses', filter);
+                currentData = currentData[0];
+                if (currentData) {
+                    let currentCourse = await findRecord('courses', {_id: currentData.course_id});
+                    currentCourse = currentCourse[0];
+                    response = await deleteRecord(collection, filter);
+                    if (response) {
+                        currentCourse['Available'] += 1;
+                        await updateRecord('courses', currentCourse);
+                    }
+                }
+                break;
+            default:
+                response = await deleteRecord(collection, filter);
+                break;
+        }
     } catch (error) {
         res.status(404).send({ message: error });
     }

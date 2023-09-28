@@ -17,45 +17,47 @@ export const GlobalProvider = ({ children }) => {
     const [students, setStudents] = useState([]);
     const [teachers, setTeachers] = useState([]);
     const [notifications, setNotifications] = useState([]);
-
-    const requireData = useMemo(() => [
-        {
-            collection: 'roles',
-            filter: {}
-        },
-        {
-            collection: 'menus',
-            filter: { role: user.role}
-        },
-        {
-            collection: 'courses',
-            filter: {}
-        },
-        {
-            collection: 'notifications',
-            filter: user.role === 1 ? { role: user.role, status: 'Pending' } : { $or:   [
-                { role: user.role, status: 'Pending' },
-                { user_id: user._id, status: 'Pending' }
-              ]
-            }
-        },
-        {
-            collection: 'users',
-            filter: { role: 2 }
-        },
-        {
-            collection: 'users',
-            filter: { role: 3 }
-        },
-        {
-            collection: 'usercourses',
-            filter: { user_id: user._id}
+    const requireData = useMemo(() => {
+        if (user !== undefined && Object.keys(user).length > 0) {
+            return [
+                {
+                    collection: 'roles',
+                    filter: {}
+                },
+                ...(user && [{
+                    collection: 'menus',
+                    filter: { role: user.role}
+                }]),
+                {
+                    collection: 'courses',
+                    filter: {}
+                },
+                ...(user && [{
+                    collection: 'notifications',
+                    filter: user.role === 1 ? { role: user.role} : { $or: [
+                        { role: user.role},
+                        { user_id: user._id}
+                      ]
+                    }
+                }]),
+                {
+                    collection: 'users',
+                    filter: { role: 2 }
+                },
+                {
+                    collection: 'users',
+                    filter: { role: 3 }
+                },
+                ...(user && [{
+                    collection: 'usercourses',
+                    filter: user.role === 1 ? {} : { user_id: user._id}
+                }])
+            ]
         }
-    ], [user]);
+    }, [user]);
 
     // Update List Function
     const updateList = useCallback((list, newItem) => {
-        console.log(newItem);
         switch (list) {
             case 'roles':
                 setRoles((prev) => [...prev, newItem]);
@@ -83,7 +85,7 @@ export const GlobalProvider = ({ children }) => {
                 break;
         }  
     }, [setRoles, setMenus, setCourses, setUserCourses, setNotifications, setStudents, setTeachers]);
-
+    // Get data function
     const getData = useCallback(() => {
         requireData.forEach((c) => {
             axios.post('/getData', c).then((res) => {
@@ -123,7 +125,7 @@ export const GlobalProvider = ({ children }) => {
             }).catch((err) => toast.error(err));
         });
     }, [requireData, setRoles, setMenus, setCourses, setTeachers, setStudents]);
-    
+
     useEffect(() => {
         if (user !== undefined && Object.keys(user).length > 0) {
             getData();
@@ -146,9 +148,9 @@ export const GlobalProvider = ({ children }) => {
                 }
             });
         }
-    }, [user, getData]);
+    }, [user, getData, updateList]);
 
-    return <GlobalContext.Provider value={{ roles, menus, notifications, courses, userCourses, teachers, students, updateList, getData }}>{children}</GlobalContext.Provider>;    
+    return <GlobalContext.Provider value={{ roles, menus, notifications, courses, setCourses, userCourses, teachers, students, updateList, getData }}>{children}</GlobalContext.Provider>;    
 
 }
 

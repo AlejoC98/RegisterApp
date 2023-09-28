@@ -1,0 +1,33 @@
+# RegisterApp
+
+This App if for the CapStone module, to login you can user the following account:
+username: igneel98,
+password: 123456,
+type: admin
+username: gomari,
+password: 123456,
+type: student
+username: gomari,
+password: 123456,
+type: student
+username: brygil,
+password: 123456,
+type: student
+username: antogo,
+password: 123456,
+type: student
+username: sammy,
+password: 123456,
+type: student
+username: nicoro,
+password: 123456,
+type: student
+username: jufelkeen,
+password: 123456,
+type: student
+username: jesusch,
+password: 123456,
+type: student
+username: thomasch,
+password: 123456,
+type: teacher

@@ -18,9 +18,9 @@ const Students = () => {
     let mainPath = location.pathname.split('/')[1];
     navigate(`/${mainPath}/${data._id}`, { state: { data: data }});
   }
-
+  
   return (
-    <Box flexGrow={1}>
+    <Box flexGrow={1} className='animate__animated animate__zoomIn animate__faster'>
       <BasicTable
         title='Students' 
         actions={user.role === 1 ? [<DialogModal title='New Student' buttonText='New Student' buttonColor='secondary' content={<RegisterForm type={3} />} />] : undefined}

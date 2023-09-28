@@ -7,19 +7,25 @@ import axios from 'axios';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 axios.interceptors.request.use(config => {
+  if (document.querySelector(".loading-container")) {
     document.querySelector(".loading-container").style.display = "flex";
+  }
     return config;
 });
 
 axios.interceptors.response.use(response => {
   setTimeout(() => {
-    document.querySelector(".loading-container").style.display = "none";
-  }, 1000);  
+    if (document.querySelector(".loading-container")) {
+      document.querySelector(".loading-container").style.display = "none";
+    }
+  }, 800);
     return response;
 }, (err) => {
   setTimeout(() => {
-    document.querySelector(".loading-container").style.display = "none";
-  }, 1000);  
+    if (document.querySelector(".loading-container")) {
+      document.querySelector(".loading-container").style.display = "none";
+    }
+  }, 800);
     return Promise.reject(err);
 });
 

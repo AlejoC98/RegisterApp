@@ -11,16 +11,20 @@ import MaskTextField from '../../components/MaskTextField';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { UserAuth } from '../../context/UserContext';
+import { Global } from '../../context/GlobalContext';
 
 const RegisterForm = ({ type }) => {
 
     const { user } = UserAuth();
+    const { updateList } = Global();
 
     const initialValues = {
         firstname: '',
         lastname: '',
         username: '',
-        role: type,
+        ...(type !== undefined && {
+            role: type,
+        }),
         password: '',
         confirmPassword: '',
         dob: '',
@@ -34,7 +38,9 @@ const RegisterForm = ({ type }) => {
         firstname: yup.string().required('This field is required!'),
         lastname: yup.string().required('This field is required!'),
         username: yup.string().required('This field is required!'),
-        role: yup.number().required('This field is required!'),
+        ...(type !== undefined && {
+            role: yup.number().required('This field is required!'),
+        }),
         password: yup.string().min(6, 
             'Password must be at least 6 characters').required('Password required!'),
         confirmPassword: yup.string().oneOf([yup.ref('password'), null], 
@@ -63,8 +69,12 @@ const RegisterForm = ({ type }) => {
 
         axios.post('/auth/register', formData).then((res) => {
             resetForm();
-            if (type === undefined) {
-                navigate('/Login');
+            if (user.role === 1) {
+                updateList(values.role === 3 ? 'students' : 'teachers', values);
+            } else {
+                if (type === undefined) {
+                    navigate('/Login');
+                }
             }
             setTimeout(() => {
                 toast.success(res.data.message);

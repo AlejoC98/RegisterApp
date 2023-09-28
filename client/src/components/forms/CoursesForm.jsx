@@ -48,6 +48,7 @@ const CoursesForm = () => {
     }).then((res) => {
       if (res.data.status === true) {
         resetForm();
+        insertData['_id'] = res.data.recordId;
         updateList('courses', insertData);
         toast.success(res.data.message);
       }
@@ -204,7 +205,6 @@ const CoursesForm = () => {
                       variant='filled'
                       type='text'
                       name='cost'
-                      // value={values.cost}
                       onChange={handleChange}
                       error={!!touched.cost && !!errors.cost}
                       helperText={touched.cost && errors.cost}

@@ -229,3 +229,54 @@ body,
     height: 450px !important;
     padding: 2rem !important;
 }
+
+.full-width {
+    display: flex;
+    width: 100%;
+}
+
+.full-width.b-bottom {
+    border-bottom: 1px solid #e9ebec;
+}
+
+.hide {
+    display: none;
+}
+
+// .edit-actions {
+//     position: absolute;
+//     right: .1rem;
+    // button {
+    //     margin-right: 1rem;
+    // }
+// }
+
+// .edit-actions.show {
+//     animation: moveToLeft 1s ease-out forwards;
+// }
+
+// .edit-actions.hide {
+//     animation: moveToRight 1s ease-out forwards;
+// }
+
+// .details-form {
+//     animation: fadeIn 5s ease-out forwards;
+// }
+
+// @keyframes moveToLeft {
+//     0% {
+//         right: -13rem;
+//     }
+//     100% {
+//         right: 0;
+//     }
+// }
+
+// @keyframes moveToRight {
+//     0% {
+//         right: 2rem;
+//     }
+//     100% {
+//         right: -13rem;
+//     }
+// }
