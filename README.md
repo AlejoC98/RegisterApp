@@ -2,6 +2,10 @@
 
 This application was developed as part of the Capstone module. It serves as a comprehensive student management system with various roles and features. 
 
+## Live Version
+
+You can check out the live version of this project [here](https://register-app-so2z.onrender.com/).
+
 ## Demo Accounts
 
 You can use the following demo accounts to log in:
