@@ -74,4 +74,4 @@ Feel free to explore and test the application using these demo accounts.
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/your-repo.git
+   git clone https://github.com/AlejoC98/RegisterApp.git
